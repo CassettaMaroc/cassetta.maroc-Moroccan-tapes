@@ -150,7 +150,30 @@ body::after {
 .setup-banner .alt-note {
   margin-top:14px; padding:12px; background:var(--s3);
   border-radius:6px; font-size:12px; color:var(--txt2); font-family:var(--fm);
+  line-height:1.7;
 }
+.url-input-row {
+  display:flex; gap:8px; margin-top:14px;
+}
+.url-input-row input {
+  flex:1; padding:10px 14px;
+  background:var(--s3); border:1px solid var(--bdr2);
+  border-radius:8px; color:var(--txt);
+  font-family:var(--fm); font-size:12px; outline:none;
+  transition:border-color .2s;
+}
+.url-input-row input:focus { border-color:var(--acc) }
+.url-input-row input::placeholder { color:var(--mut); font-size:11px }
+.url-input-row button {
+  padding:10px 20px; border-radius:8px;
+  background:var(--acc); border:none; color:#000;
+  font-family:var(--fm); font-size:11px; font-weight:700;
+  letter-spacing:1px; cursor:pointer; transition:all .2s;
+  white-space:nowrap; flex-shrink:0;
+}
+.url-input-row button:hover { background:#16a34a }
+.url-input-row button:disabled { background:var(--s4); color:var(--mut); cursor:not-allowed }
+.setup-steps-wrap { margin-top:4px }
 .setup-banner .alt-note strong { color:var(--org) }
 
 /* ── SEARCH HERO ── */
@@ -475,28 +498,30 @@ mark { background:rgba(34,197,94,.2); color:var(--acc); border-radius:2px; paddi
 
   <div id="setup-guide" style="display:none">
     <div class="setup-banner">
-      <h3>📋 Connect Your Google Sheet</h3>
-      <p>Your sheet needs to be published publicly so the app can read it. Follow these steps:</p>
-      <ol class="setup-steps">
-        <li>Open your Google Sheet → click <code>File</code> in the menu</li>
-        <li>Go to <code>Share</code> → <code>Publish to web</code></li>
-        <li>In the first dropdown select <strong>Sheet1</strong> (or your sheet name)</li>
-        <li>In the second dropdown select <code>Comma-separated values (.csv)</code></li>
-        <li>Click <code>Publish</code> → confirm → copy the URL</li>
-        <li>Paste the URL in the code replacing <code>SHEET_URL</code> at the top of the script, then hit <strong>Sync</strong></li>
-      </ol>
-      <div class="alt-note">
-        <strong>🖼 How to add artwork</strong><br><br>
-        The best free option is <strong style="color:var(--acc)">GitHub</strong>:<br>
-        <ol style="margin:8px 0 0 16px;line-height:2">
-          <li>Create a free public repo on <code>github.com</code></li>
-          <li>Upload your .jpg images directly to the repo</li>
-          <li>Click the image → click <strong>Download raw file</strong> → copy the URL</li>
-          <li>It looks like: <code>https://raw.githubusercontent.com/you/repo/main/image.jpg</code></li>
-          <li>Paste that URL into the <code>ART Work</code> column in your sheet</li>
+      <h3>🔗 Connect Your Google Sheet</h3>
+      <p>Paste your published CSV URL below to connect your data.</p>
+
+      <div class="url-input-row">
+        <input type="url" id="sheet-url-input" placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv"
+          value="" oninput="checkUrlInput()"/>
+        <button onclick="saveSheetUrl()" id="url-save-btn" disabled>Connect</button>
+      </div>
+      <div id="url-feedback" style="font-family:var(--fm);font-size:11px;margin-top:8px;min-height:16px"></div>
+
+      <div class="setup-steps-wrap">
+        <div class="fp-label" style="margin-top:18px;margin-bottom:10px">How to get your published URL</div>
+        <ol class="setup-steps">
+          <li>Open your Google Sheet → click <code>File</code> in the top menu</li>
+          <li>Click <code>Share</code> → then <code>Publish to web</code></li>
+          <li>In the <strong>first dropdown</strong> select your sheet tab name (e.g. <code>Sheet1</code>)</li>
+          <li>In the <strong>second dropdown</strong> select <code>Comma-separated values (.csv)</code></li>
+          <li>Click the <code>Publish</code> button → confirm with <code>OK</code></li>
+          <li>Copy the URL shown — it starts with <code>https://docs.google.com/spreadsheets/d/e/2PACX-</code></li>
+          <li>Paste it in the field above and click <strong>Connect</strong></li>
         </ol>
-        <br>
-        <span style="color:var(--mut)">Google Drive links are blocked by browsers (CORS). Imgur viewer pages like <code>imgur.com/xxxxx</code> also often fail — use the <strong>direct</strong> link ending in <code>.jpg</code> instead.</span>
+        <div class="alt-note" style="margin-top:14px">
+          ⚠️ <strong>The URL in your browser address bar will NOT work.</strong> You must use the URL from <em>File → Share → Publish to web</em>. It contains <code>/e/2PACX-</code> in it.
+        </div>
       </div>
     </div>
   </div>
@@ -604,11 +629,12 @@ mark { background:rgba(34,197,94,.2); color:var(--acc); border-radius:2px; paddi
 // ═══════════════════════════════════════════════
 // CONFIG — paste your published CSV URL here
 // ═══════════════════════════════════════════════
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1J2Zd-UfGUcKg9VLx1fe7LqvVco_To8ZAN6A_KcHpCk8/pub?output=csv';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1YCCoP2M9d_QiOHHYyVLXdL_nFAxhuo3cW1c2nl8T1goEYyHtgNnVwyskR6UnowzW7mTv7K9twuy7/pub?output=csv';
 
 const PROXIES = [
   u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
   u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
   u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
 ];
 
@@ -656,65 +682,109 @@ async function tryFetch(url, ms=7000) {
   } catch(e) { clearTimeout(t); return null; }
 }
 
+
 async function loadData() {
+  const url = localStorage.getItem('sheet_url') ||
+    'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1YCCoP2M9d_QiOHHYyVLXdL_nFAxhuo3cW1c2nl8T1goEYyHtgNnVwyskR6UnowzW7mTv7K9twuy7/pub?output=csv';
+
   setSyncState(true);
   setStatus('loading', 'Connecting to Google Sheets…');
   document.getElementById('setup-guide').style.display = 'none';
 
-  let text = await tryFetch(SHEET_URL, 5000);
+  let text = null;
+
+  // Try direct first
+  setStatus('loading', 'Trying direct connection…');
+  text = await tryFetch(url, 6000);
+
+  // Try all proxies
   if (!text) {
     for (const px of PROXIES) {
-      setStatus('loading', 'Trying proxy…');
-      text = await tryFetch(px(SHEET_URL), 8000);
-      if (text) break;
+      setStatus('loading', 'Trying proxy fallback…');
+      text = await tryFetch(px(url), 10000);
+      if (text) { console.log('✅ Got data via proxy'); break; }
     }
   }
+
   setSyncState(false);
 
   if (!text) {
-    setStatus('err', '❌ Sheet not accessible. It must be published as CSV. See the guide below.');
+    setStatus('err', '❌ Could not load sheet. Is your internet connected? Try clicking Sync again.');
     document.getElementById('setup-guide').style.display = 'block';
     return;
   }
 
-  // Log raw CSV for debugging
-  console.log('📄 Raw CSV (first 500 chars):', text.slice(0,500));
+  console.log('📄 RAW CSV (first 800 chars):\n', text.slice(0, 800));
+
+  // Check if it returned an HTML error page instead of CSV
+  if (text.trim().startsWith('<')) {
+    setStatus('err', '❌ Sheet returned an HTML page instead of CSV — make sure it is published as CSV (File → Share → Publish to web).');
+    document.getElementById('setup-guide').style.display = 'block';
+    return;
+  }
 
   try {
     const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
     console.log('📄 Total lines:', lines.length);
-    console.log('📄 Line 0:', lines[0]);
-    if (lines.length > 1) console.log('📄 Line 1:', lines[1]);
+    console.log('📄 Headers:', lines[0]);
+    if (lines[1]) console.log('📄 Row 1:', lines[1]);
 
-    // Find the header row — it's the first row that has 3+ non-empty comma-separated values
-    let headerIdx = 0;
+    // Find header row — first row with 3+ filled cells
+    let hi = 0;
     for (let i = 0; i < Math.min(5, lines.length); i++) {
-      const parts = splitLine(lines[i]).filter(p => p.trim());
-      if (parts.length >= 3) { headerIdx = i; break; }
+      if (splitLine(lines[i]).filter(p => p.trim()).length >= 3) { hi = i; break; }
     }
-    console.log('📄 Header row index:', headerIdx, '→', lines[headerIdx]);
 
-    const rows = parseCSV(lines.slice(headerIdx).join('\n'));
-    console.log('📋 All columns:', Object.keys(rows[0] || {}));
-    console.log('📋 First row values:', rows[0]);
+    const rows = parseCSV(lines.slice(hi).join('\n'));
+    console.log('📋 Columns:', Object.keys(rows[0] || {}));
 
-    // Filter out completely empty rows — accept ANY row that has at least one non-empty value
-    const validRows = rows.filter(r => Object.values(r).some(v => v && v.trim()));
-    console.log('📋 Valid rows:', validRows.length);
+    const valid = rows.filter(r => Object.values(r).some(v => v && v.trim()));
+    console.log('📋 Valid rows:', valid.length);
 
-    if (!validRows.length) throw new Error(`Sheet loaded but no data rows found. Columns detected: ${Object.keys(rows[0]||{}).join(', ') || 'none'}`);
+    if (!valid.length) throw new Error(
+      `Sheet loaded (${lines.length} lines) but no data rows found.\nColumns seen: ${Object.keys(rows[0]||{}).join(' | ') || 'NONE — check sheet is published correctly'}`
+    );
 
-    ALL_TAPES = validRows.map((r,i) => normalise(r,i));
-    renderDashboard();
-    renderCollection();
-    doSearch();
-    buildFilters();
+    ALL_TAPES = valid.map((r, i) => normalise(r, i));
+    renderDashboard(); renderCollection(); doSearch(); buildFilters();
     setStatus('ok', `✓ ${ALL_TAPES.length} tapes loaded`);
-    try { localStorage.setItem('tape_cache', JSON.stringify({ts:Date.now(), data:ALL_TAPES})); } catch(e){}
+    try { localStorage.setItem('tape_cache', JSON.stringify({ ts: Date.now(), data: ALL_TAPES })); } catch(e) {}
   } catch(e) {
     console.error('❌ Parse error:', e);
     setStatus('err', '⚠ ' + e.message);
   }
+}
+
+
+function checkUrlInput() {
+  const val = document.getElementById('sheet-url-input').value.trim();
+  const btn = document.getElementById('url-save-btn');
+  const fb  = document.getElementById('url-feedback');
+  if (!val) { btn.disabled=true; fb.textContent=''; return; }
+  if (val.includes('docs.google.com/spreadsheets') && val.includes('output=csv')) {
+    btn.disabled = false;
+    if (val.includes('/e/2PACX-')) {
+      fb.style.color='var(--acc)'; fb.textContent='✓ Looks like a valid published CSV URL';
+    } else {
+      fb.style.color='var(--org)'; fb.textContent='⚠ This looks like an edit URL, not a published URL. See instructions below.';
+    }
+  } else if (val.includes('docs.google.com/spreadsheets')) {
+    btn.disabled = false;
+    fb.style.color='var(--org)'; fb.textContent='⚠ Make sure to add ?output=csv at the end, or follow the publish steps below.';
+  } else {
+    btn.disabled = true;
+    fb.style.color='var(--red)'; fb.textContent='✗ Doesn\'t look like a Google Sheets URL';
+  }
+}
+
+function saveSheetUrl() {
+  const val = document.getElementById('sheet-url-input').value.trim();
+  if (!val) return;
+  // Auto-append output=csv if missing
+  const url = val.includes('output=csv') ? val : val + (val.includes('?') ? '&' : '?') + 'output=csv';
+  localStorage.setItem('sheet_url', url);
+  document.getElementById('setup-guide').style.display = 'none';
+  loadData();
 }
 
 // ═══════════════════════════════════════════════
@@ -1129,6 +1199,12 @@ function escReg(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 // INIT
 // ═══════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', async () => {
+  // Pre-fill URL input if saved
+  const saved = localStorage.getItem('sheet_url');
+  if (saved) {
+    const input = document.getElementById('sheet-url-input');
+    if (input) { input.value = saved; checkUrlInput(); }
+  }
   try {
     const cached = localStorage.getItem('tape_cache');
     if (cached) {
@@ -1136,7 +1212,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (data?.length && Date.now()-ts < 24*60*60*1000) {
         ALL_TAPES = data;
         renderDashboard(); renderCollection(); doSearch(); buildFilters();
-        setStatus('ok', `✓ ${ALL_TAPES.length} tapes (cached)`);
+        setStatus('ok', `✓ ${ALL_TAPES.length} tapes (cached) — tap Sync to refresh`);
       }
     }
   } catch(e) {}
