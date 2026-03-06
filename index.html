@@ -727,7 +727,10 @@ function findArtKey(r) {
 function normalise(r, i) {
   if (i === 0) {
     _artKey = findArtKey(r);
-    console.log('🖼 Artwork column:', JSON.stringify(_artKey), '→ sample:', r[_artKey]);
+    const raw = r[_artKey]||'';
+    console.log('🖼 Artwork column:', JSON.stringify(_artKey));
+    console.log('🖼 First raw value:', JSON.stringify(raw));
+    console.log('🖼 After fixArtUrl:', JSON.stringify(fixArtUrl(raw)));
   }
   return {
     ref:       get(r,'REF','Ref','ref') || (i+1),
@@ -753,11 +756,27 @@ function normalise(r, i) {
 function fixArtUrl(url) {
   if (!url) return '';
   url = url.trim();
-  // Google Drive — blocked by CORS, skip gracefully
+
+  // Google Drive — blocked by CORS, skip
   if (/drive\.google\.com/.test(url)) return '';
-  // ImgBB viewer → try to extract direct link
-  const imgbb = url.match(/ibb\.co\/([^\/]+)$/);
+
+  // ── IMGUR ──
+  // Gallery page: imgur.com/gallery/xxxxx or imgur.com/a/xxxxx → not a direct image, skip
+  if (/imgur\.com\/(gallery|a)\//.test(url)) return '';
+  // Viewer page: imgur.com/xxxxx (no extension) → convert to direct image
+  const imgurPage = url.match(/imgur\.com\/([a-zA-Z0-9]+)$/);
+  if (imgurPage) return `https://i.imgur.com/${imgurPage[1]}.jpg`;
+  // Direct image already: i.imgur.com/xxxxx.jpg → use as-is
+  if (/i\.imgur\.com\//.test(url)) return url;
+
+  // ── IMGBB ──
+  // Viewer page: ibb.co/xxxxx → extract ID
+  const imgbb = url.match(/ibb\.co\/([^\/\?]+)$/);
   if (imgbb) return `https://i.ibb.co/${imgbb[1]}/img.jpg`;
+  // Direct: i.ibb.co → use as-is
+  if (/i\.ibb\.co\//.test(url)) return url;
+
+  // Anything else (direct http image link) — use as-is
   return url;
 }
 
