@@ -486,10 +486,17 @@ mark { background:rgba(34,197,94,.2); color:var(--acc); border-radius:2px; paddi
         <li>Paste the URL in the code replacing <code>SHEET_URL</code> at the top of the script, then hit <strong>Sync</strong></li>
       </ol>
       <div class="alt-note">
-        <strong>⚠ Artwork not showing?</strong> Google Drive image links are blocked by browsers due to CORS restrictions.
-        Use a free image host instead: upload your artwork to <strong style="color:var(--acc)">Imgur</strong> (imgur.com/upload) or
-        <strong style="color:var(--acc)">ImgBB</strong> (imgbb.com) and paste the direct image URL (ending in .jpg/.png) into the <code>ART Work</code> column.
-        Google Drive links will <em>never</em> work as img src in a web app.
+        <strong>🖼 How to add artwork</strong><br><br>
+        The best free option is <strong style="color:var(--acc)">GitHub</strong>:<br>
+        <ol style="margin:8px 0 0 16px;line-height:2">
+          <li>Create a free public repo on <code>github.com</code></li>
+          <li>Upload your .jpg images directly to the repo</li>
+          <li>Click the image → click <strong>Download raw file</strong> → copy the URL</li>
+          <li>It looks like: <code>https://raw.githubusercontent.com/you/repo/main/image.jpg</code></li>
+          <li>Paste that URL into the <code>ART Work</code> column in your sheet</li>
+        </ol>
+        <br>
+        <span style="color:var(--mut)">Google Drive links are blocked by browsers (CORS). Imgur viewer pages like <code>imgur.com/xxxxx</code> also often fail — use the <strong>direct</strong> link ending in <code>.jpg</code> instead.</span>
       </div>
     </div>
   </div>
@@ -760,20 +767,22 @@ function fixArtUrl(url) {
   // Google Drive — blocked by CORS, skip
   if (/drive\.google\.com/.test(url)) return '';
 
+  // ── GITHUB ──
+  // Regular github.com file page → convert to raw
+  const ghPage = url.match(/github\.com\/([^\/]+\/[^\/]+)\/blob\/(.+)/);
+  if (ghPage) return `https://raw.githubusercontent.com/${ghPage[1]}/${ghPage[2]}`;
+  // Already raw → use as-is
+  if (/raw\.githubusercontent\.com/.test(url)) return url;
+
   // ── IMGUR ──
-  // Gallery page: imgur.com/gallery/xxxxx or imgur.com/a/xxxxx → not a direct image, skip
   if (/imgur\.com\/(gallery|a)\//.test(url)) return '';
-  // Viewer page: imgur.com/xxxxx (no extension) → convert to direct image
   const imgurPage = url.match(/imgur\.com\/([a-zA-Z0-9]+)$/);
   if (imgurPage) return `https://i.imgur.com/${imgurPage[1]}.jpg`;
-  // Direct image already: i.imgur.com/xxxxx.jpg → use as-is
   if (/i\.imgur\.com\//.test(url)) return url;
 
   // ── IMGBB ──
-  // Viewer page: ibb.co/xxxxx → extract ID
   const imgbb = url.match(/ibb\.co\/([^\/\?]+)$/);
   if (imgbb) return `https://i.ibb.co/${imgbb[1]}/img.jpg`;
-  // Direct: i.ibb.co → use as-is
   if (/i\.ibb\.co\//.test(url)) return url;
 
   // Anything else (direct http image link) — use as-is
