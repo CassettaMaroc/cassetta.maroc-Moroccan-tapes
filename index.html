@@ -570,7 +570,7 @@ let activeFilter = 'all';
 // Advanced panel filters
 let panelFilters = { status: new Set(), platform: new Set(), genre: new Set() };
 // Artwork cache
-const artCache = {};
+
 
 
 // ═══════════════════════════════════════════════════════════
@@ -683,6 +683,7 @@ function normalise(r, i) {
     instagram:isPosted(get(r,'INSTAGRAM','Instagram')),
     webarchive:isPosted(get(r,'WEBARCHIVE','WebArchive','Web Archive')),
     mainGenre:mg(get(r,'Genre_Category','Genre / Category','Genre')),
+    artwork:  get(r,'ART Work','Art Work','Artwork','ARTWORK','artwork'),
   };
 }
 
@@ -860,8 +861,6 @@ function setGenreFilter(g) {
 function renderCollection() {
   document.getElementById('col-count').textContent = ALL_TAPES.length + ' tapes';
   document.getElementById('col-list').innerHTML = ALL_TAPES.map(t => colTile(t)).join('');
-  // Lazy-load artwork for visible tiles
-  ALL_TAPES.forEach(t => fetchArtwork(t));
 }
 
 function colTile(t) {
@@ -874,13 +873,22 @@ function colTile(t) {
     t.instagram  ? `<span class="tag tag-ig">IG</span>` : '',
     t.webarchive ? `<span class="tag tag-wa">Arc</span>` : '',
   ].filter(Boolean).slice(0,3).join('');
+
+  const artInner = t.artwork
+    ? `<img src="${esc(t.artwork)}" alt="${esc(t.artist)}" loading="lazy" class="loaded" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"  />
+       <div class="col-art-placeholder" style="display:none">
+         <span class="art-initials">${initials}</span>
+         <span class="art-ref">#${t.ref}</span>
+       </div>`
+    : `<div class="col-art-placeholder">
+         <span class="art-initials">${initials}</span>
+         <span class="art-ref">#${t.ref}</span>
+       </div>`;
+
   return `
     <div class="col-tile">
-      <div class="col-art" id="art-${t.ref}">
-        <div class="col-art-placeholder">
-          <span class="art-initials">${initials}</span>
-          <span class="art-ref">#${t.ref}</span>
-        </div>
+      <div class="col-art">
+        ${artInner}
         <div class="col-art-status" style="background:${statusColor}"></div>
       </div>
       <div class="col-tile-info">
@@ -891,53 +899,6 @@ function colTile(t) {
     </div>`;
 }
 
-async function fetchArtwork(t) {
-  const key = `${t.artist}__${t.album}`.toLowerCase();
-  if (artCache[key] !== undefined) {
-    if (artCache[key]) injectArt(t.ref, artCache[key]);
-    return;
-  }
-  artCache[key] = null; // mark as fetching
-
-  // Search MusicBrainz for the release
-  const q = encodeURIComponent(`artist:"${t.artist}" release:"${t.album||t.artist}"`);
-  try {
-    const mbRes = await fetch(`https://musicbrainz.org/ws/2/release/?query=${q}&limit=1&fmt=json`, {
-      headers: {'User-Agent': 'TapeArchiveApp/1.0'}
-    });
-    if (!mbRes.ok) return;
-    const mbData = await mbRes.json();
-    const release = mbData.releases?.[0];
-    if (!release?.id) return;
-
-    const mbid = release.id;
-    const imgUrl = `https://coverartarchive.org/release/${mbid}/front-250`;
-    // Verify the image exists
-    const imgRes = await fetch(imgUrl, {method:'HEAD'});
-    if (imgRes.ok) {
-      artCache[key] = imgUrl;
-      injectArt(t.ref, imgUrl);
-    }
-  } catch(e) { /* silent fail — placeholder stays */ }
-}
-
-function injectArt(ref, url) {
-  const container = document.getElementById(`art-${ref}`);
-  if (!container) return;
-  const img = document.createElement('img');
-  img.className = 'loading';
-  img.src = url;
-  img.alt = '';
-  img.onload = () => {
-    img.classList.remove('loading');
-    img.classList.add('loaded');
-    // Hide placeholder
-    const ph = container.querySelector('.col-art-placeholder');
-    if (ph) ph.style.display = 'none';
-  };
-  img.onerror = () => img.remove();
-  container.appendChild(img);
-}
 
 
 
