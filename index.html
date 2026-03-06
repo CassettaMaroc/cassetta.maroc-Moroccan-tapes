@@ -677,23 +677,34 @@ async function loadData() {
     return;
   }
 
+  // Log raw CSV for debugging
+  console.log('📄 Raw CSV (first 500 chars):', text.slice(0,500));
+
   try {
-    let rows = parseCSV(text);
-    if (!Object.keys(rows[0]||{}).some(k => /artist/i.test(k))) {
-      const lines = text.trim().split(/\r?\n/);
-      const hi = lines.findIndex(l => /artist/i.test(l));
-      if (hi >= 0) rows = parseCSV(lines.slice(hi).join('\n'));
+    const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+    console.log('📄 Total lines:', lines.length);
+    console.log('📄 Line 0:', lines[0]);
+    if (lines.length > 1) console.log('📄 Line 1:', lines[1]);
+
+    // Find the header row — it's the first row that has 3+ non-empty comma-separated values
+    let headerIdx = 0;
+    for (let i = 0; i < Math.min(5, lines.length); i++) {
+      const parts = splitLine(lines[i]).filter(p => p.trim());
+      if (parts.length >= 3) { headerIdx = i; break; }
     }
-    rows = rows.filter(r => {
-      const a = (r['Artist']||r['ARTIST']||'').trim();
-      return a && !['Artist','Artiste'].includes(a);
-    });
-    if (!rows.length) throw new Error('No tape rows found');
+    console.log('📄 Header row index:', headerIdx, '→', lines[headerIdx]);
 
-    // Log columns for debugging
-    console.log('📋 Columns found:', Object.keys(rows[0]));
+    const rows = parseCSV(lines.slice(headerIdx).join('\n'));
+    console.log('📋 All columns:', Object.keys(rows[0] || {}));
+    console.log('📋 First row values:', rows[0]);
 
-    ALL_TAPES = rows.map((r,i) => normalise(r,i));
+    // Filter out completely empty rows — accept ANY row that has at least one non-empty value
+    const validRows = rows.filter(r => Object.values(r).some(v => v && v.trim()));
+    console.log('📋 Valid rows:', validRows.length);
+
+    if (!validRows.length) throw new Error(`Sheet loaded but no data rows found. Columns detected: ${Object.keys(rows[0]||{}).join(', ') || 'none'}`);
+
+    ALL_TAPES = validRows.map((r,i) => normalise(r,i));
     renderDashboard();
     renderCollection();
     doSearch();
@@ -701,15 +712,28 @@ async function loadData() {
     setStatus('ok', `✓ ${ALL_TAPES.length} tapes loaded`);
     try { localStorage.setItem('tape_cache', JSON.stringify({ts:Date.now(), data:ALL_TAPES})); } catch(e){}
   } catch(e) {
-    setStatus('err', '⚠ Data error: ' + e.message);
+    console.error('❌ Parse error:', e);
+    setStatus('err', '⚠ ' + e.message);
   }
 }
 
 // ═══════════════════════════════════════════════
-// NORMALISE
+// NORMALISE — auto-detects all column names
 // ═══════════════════════════════════════════════
 function get(r, ...keys) {
+  // Exact match first
   for (const k of keys) if (r[k] !== undefined && r[k] !== '') return r[k];
+  // Case-insensitive match
+  const rkeys = Object.keys(r);
+  for (const k of keys) {
+    const found = rkeys.find(rk => rk.trim().toLowerCase() === k.toLowerCase());
+    if (found && r[found] !== '') return r[found];
+  }
+  // Partial match — key contains the search term
+  for (const k of keys) {
+    const found = rkeys.find(rk => rk.trim().toLowerCase().includes(k.toLowerCase()));
+    if (found && r[found] !== '') return r[found];
+  }
   return '';
 }
 const isYes    = v => /^yes$/i.test(String(v||'').trim());
@@ -720,37 +744,41 @@ const mg = g => g ? String(g).split(/[,\/]/)[0].trim() : '';
 let _artKey = null;
 function findArtKey(r) {
   const keys = Object.keys(r);
-  // Try exact matches first
-  for (const k of keys) {
-    if (/^art\s?work$/i.test(k.trim())) return k;
-  }
-  // Then partial match
-  for (const k of keys) {
-    if (/art/i.test(k)) return k;
-  }
+  for (const k of keys) { if (/^art\s?work$/i.test(k.trim())) return k; }
+  for (const k of keys) { if (/art/i.test(k)) return k; }
   return '';
+}
+
+// Auto-detect artist column
+let _artistKey = null;
+function findArtistKey(r) {
+  const keys = Object.keys(r);
+  for (const k of keys) { if (/^artist[e]?$/i.test(k.trim())) return k; }
+  for (const k of keys) { if (/artist/i.test(k)) return k; }
+  // Fallback: first column
+  return keys[0] || '';
 }
 
 function normalise(r, i) {
   if (i === 0) {
-    _artKey = findArtKey(r);
-    const raw = r[_artKey]||'';
-    console.log('🖼 Artwork column:', JSON.stringify(_artKey));
-    console.log('🖼 First raw value:', JSON.stringify(raw));
-    console.log('🖼 After fixArtUrl:', JSON.stringify(fixArtUrl(raw)));
+    _artKey    = findArtKey(r);
+    _artistKey = findArtistKey(r);
+    console.log('👤 Artist column:', JSON.stringify(_artistKey), '→', r[_artistKey]);
+    console.log('🖼 Artwork column:', JSON.stringify(_artKey), '→', r[_artKey]);
   }
+  const artist = _artistKey ? (r[_artistKey]||'').trim() : get(r,'Artist','Artiste','ARTIST','artiste');
   return {
-    ref:       get(r,'REF','Ref','ref') || (i+1),
-    artist:    get(r,'Artist','ARTIST','artist','Artiste'),
-    album:     get(r,'Album_Title','Album / Title','Album','ALBUM','Title'),
-    genre:     get(r,'Genre_Category','Genre / Category','Genre','GENRE'),
-    label:     get(r,'Label_Notes','Label / Notes','Label','LABEL'),
-    digitized: isYes(get(r,'Digitized','DIGITIZED')),
-    cover:     isYes(get(r,'COVER_SCAN','Cover Scan','COVER SCAN','Cover')),
-    youtube:   isPosted(get(r,'YOUTUBE','Youtube','YouTube')),
-    instagram: isPosted(get(r,'INSTAGRAM','Instagram')),
-    webarchive:isPosted(get(r,'WEBARCHIVE','WebArchive','Web Archive')),
-    mainGenre: mg(get(r,'Genre_Category','Genre / Category','Genre','GENRE')),
+    ref:       get(r,'REF','Ref','ref','#') || (i+1),
+    artist,
+    album:     get(r,'Album','Album_Title','Album / Title','Album Title','ALBUM','Title','Titre'),
+    genre:     get(r,'Genre','Genre_Category','Genre / Category','GENRE','Style'),
+    label:     get(r,'Label','Label_Notes','Label / Notes','LABEL','Maison'),
+    digitized: isYes(get(r,'Digitized','Digitisé','DIGITIZED','Numérisé')),
+    cover:     isYes(get(r,'Cover','COVER_SCAN','Cover Scan','COVER SCAN','Couverture')),
+    youtube:   isPosted(get(r,'YouTube','Youtube','YOUTUBE')),
+    instagram: isPosted(get(r,'Instagram','INSTAGRAM')),
+    webarchive:isPosted(get(r,'WebArchive','Web Archive','WEBARCHIVE','Archive')),
+    mainGenre: mg(get(r,'Genre','Genre_Category','Genre / Category','GENRE','Style')),
     artwork:   _artKey ? (r[_artKey]||'').trim() : '',
   };
 }
