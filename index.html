@@ -275,12 +275,173 @@ mark{background:rgba(196,65,12,.15);color:var(--acc);border-radius:1px;padding:0
 @keyframes spin{to{transform:rotate(360deg)}}
 .loader p{font-family:var(--fm);font-size:11px;color:var(--mut);font-style:italic;letter-spacing:1px}
 
+/* ── ADVANCED FILTER PANEL ── */
+.filter-bar{
+  display:flex;align-items:center;gap:10px;
+  margin:14px 0 6px;
+  flex-wrap:wrap;
+}
+.filter-toggle{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;
+  border:1px solid var(--bdr);background:var(--tape);
+  color:var(--mut);font-family:var(--fm);font-size:9px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+}
+.filter-toggle:hover,.filter-toggle.open{border-color:var(--ink);color:var(--ink)}
+.filter-toggle.has-active{border-color:var(--acc);color:var(--acc);background:rgba(196,65,12,.05)}
+.filter-toggle svg{width:12px;height:12px;transition:transform .2s}
+.filter-toggle.open svg{transform:rotate(180deg)}
+.active-chips{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;background:var(--acc);color:#f5f0e8;
+  font-family:var(--fm);font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;
+}
+.chip:hover{background:var(--ink)}
+.chip-x{font-size:11px;line-height:1;opacity:.7}
+.clear-all{
+  font-family:var(--fm);font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--mut);background:none;border:none;cursor:pointer;padding:4px 8px;
+  text-decoration:underline;text-underline-offset:2px;
+}
+.clear-all:hover{color:var(--acc)}
+
+.filter-panel{
+  background:var(--tape);border:1px solid var(--bdr);
+  padding:20px;margin-bottom:16px;
+  display:none;
+  box-shadow:var(--shadow-lg);
+}
+.filter-panel.open{display:block}
+.fp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px}
+.fp-group{}
+.fp-label{
+  font-family:var(--fm);font-size:8px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--mut);
+  margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--bdr);
+}
+.fp-options{display:flex;flex-direction:column;gap:6px}
+.fp-opt{
+  display:flex;align-items:center;gap:8px;
+  cursor:pointer;font-family:var(--fm);font-size:11px;color:var(--ink2);
+  padding:3px 0;
+}
+.fp-opt input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:14px;height:14px;border:1px solid var(--bdr);
+  background:transparent;cursor:pointer;flex-shrink:0;
+  position:relative;transition:all .15s;
+}
+.fp-opt input[type=checkbox]:checked{
+  background:var(--acc);border-color:var(--acc);
+}
+.fp-opt input[type=checkbox]:checked::after{
+  content:'✓';position:absolute;top:-1px;left:1px;
+  font-size:10px;color:#f5f0e8;font-weight:700;
+}
+.fp-opt:hover input[type=checkbox]{border-color:var(--acc)}
+.fp-opt span{user-select:none}
+.fp-genre-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
+.fp-apply{
+  margin-top:16px;padding-top:14px;border-top:1px solid var(--bdr);
+  display:flex;justify-content:flex-end;gap:8px;
+}
+.fp-apply button{
+  padding:7px 20px;font-family:var(--fm);font-size:9px;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .15s;
+}
+.fp-apply .btn-reset{background:transparent;border:1px solid var(--bdr);color:var(--mut)}
+.fp-apply .btn-reset:hover{border-color:var(--ink);color:var(--ink)}
+.fp-apply .btn-apply{background:var(--acc);border:1px solid var(--acc);color:#f5f0e8}
+.fp-apply .btn-apply:hover{background:var(--ink)}
+
+/* ── COLLECTION GRID ── */
+.col-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+}
+.col-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:16px;
+}
+.col-tile{
+  background:var(--tape);border:1px solid var(--bdr);
+  overflow:hidden;cursor:default;
+  transition:transform .15s,box-shadow .15s;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+.col-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.col-art{
+  width:100%;aspect-ratio:1;
+  background:var(--s3);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.col-art img{
+  width:100%;height:100%;object-fit:cover;
+  display:block;transition:opacity .3s;
+}
+.col-art img.loading{opacity:0}
+.col-art img.loaded{opacity:1}
+.col-art-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;height:100%;
+  background:linear-gradient(135deg,var(--s2) 0%,var(--s3) 100%);
+  position:relative;
+}
+.col-art-placeholder .art-initials{
+  font-family:var(--fb);font-size:32px;letter-spacing:2px;
+  color:var(--faint);line-height:1;
+}
+.col-art-placeholder .art-ref{
+  font-family:var(--fm);font-size:9px;color:var(--faint);
+  margin-top:4px;opacity:.6;
+}
+/* Tape reel decorative overlay on placeholder */
+.col-art-placeholder::before{
+  content:'';position:absolute;
+  width:48px;height:48px;
+  border:3px solid rgba(180,162,130,.2);
+  border-radius:50%;
+}
+.col-art-placeholder::after{
+  content:'';position:absolute;
+  width:16px;height:16px;
+  border:2px solid rgba(180,162,130,.2);
+  border-radius:50%;
+}
+.col-art-status{
+  position:absolute;top:6px;right:6px;
+  width:8px;height:8px;border-radius:50%;
+  border:1.5px solid rgba(240,232,208,.6);
+}
+.col-tile-info{padding:10px 10px 10px}
+.col-tile-artist{
+  font-family:var(--ff);font-size:12px;font-weight:700;
+  color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-bottom:2px;
+}
+.col-tile-album{
+  font-family:var(--fm);font-size:10px;color:var(--mut);font-style:italic;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-bottom:6px;
+}
+.col-tile-tags{display:flex;gap:4px;flex-wrap:wrap}
+.col-tile-tags .tag{font-size:8px;padding:1px 5px}
+
 /* ── MOBILE ── */
 @media(max-width:600px){
   .nav{padding:0 10px}
   .tab{padding:0 12px;font-size:9px;letter-spacing:1.5px}
   .page{padding:18px 14px 100px}
   .search-hero h1{font-size:clamp(36px,10vw,54px)}
+  .col-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  .fp-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
@@ -308,7 +469,46 @@ mark{background:rgba(196,65,12,.15);color:var(--acc);border-radius:1px;padding:0
     <input type="search" id="q" placeholder="Artist, album, genre, label…" oninput="doSearch()" autocomplete="off" autocorrect="off" spellcheck="false"/>
     <span class="search-icon">🔍</span>
   </div>
-  <div class="search-filters" id="filters"></div>
+
+  <!-- Filter bar: toggle button + active chips -->
+  <div class="filter-bar">
+    <button class="filter-toggle" id="filter-toggle-btn" onclick="toggleFilterPanel()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M2 4h12M4 8h8M6 12h4"/>
+      </svg>
+      Filters
+    </button>
+    <div class="active-chips" id="active-chips"></div>
+    <button class="clear-all" id="clear-all-btn" onclick="clearAllFilters()" style="display:none">Clear all</button>
+  </div>
+
+  <!-- Expandable filter panel -->
+  <div class="filter-panel" id="filter-panel">
+    <div class="fp-grid">
+      <div class="fp-group">
+        <div class="fp-label">Status</div>
+        <div class="fp-options" id="fp-status">
+          <label class="fp-opt"><input type="checkbox" value="digitized" onchange="applyPanelFilters()"><span>✓ Digitized</span></label>
+          <label class="fp-opt"><input type="checkbox" value="not_dig" onchange="applyPanelFilters()"><span>Not Digitized</span></label>
+          <label class="fp-opt"><input type="checkbox" value="cover" onchange="applyPanelFilters()"><span>Cover Scanned</span></label>
+          <label class="fp-opt"><input type="checkbox" value="not_started" onchange="applyPanelFilters()"><span>Not Started</span></label>
+        </div>
+      </div>
+      <div class="fp-group">
+        <div class="fp-label">Platform</div>
+        <div class="fp-options" id="fp-platform">
+          <label class="fp-opt"><input type="checkbox" value="youtube" onchange="applyPanelFilters()"><span>YouTube</span></label>
+          <label class="fp-opt"><input type="checkbox" value="instagram" onchange="applyPanelFilters()"><span>Instagram</span></label>
+          <label class="fp-opt"><input type="checkbox" value="webarchive" onchange="applyPanelFilters()"><span>Web Archive</span></label>
+        </div>
+      </div>
+      <div class="fp-group">
+        <div class="fp-label">Genre</div>
+        <div class="fp-options fp-genre-grid" id="fp-genres"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="search-count" id="search-count"></div>
   <div id="results"></div>
 </div>
@@ -343,8 +543,10 @@ mark{background:rgba(196,65,12,.15);color:var(--acc);border-radius:1px;padding:0
 
 <!-- ══ COLLECTION PAGE ══ -->
 <div class="page" id="page-collection">
-  <div class="sec-title">Full Collection <span id="col-count" style="color:var(--acc);font-size:13px"></span></div>
-  <div id="col-list"></div>
+  <div class="col-header">
+    <div class="sec-title" style="margin:0;flex:1">Full Collection <span id="col-count" style="color:var(--acc);font-size:13px;font-family:var(--fm)"></span></div>
+  </div>
+  <div class="col-grid" id="col-list"></div>
 </div>
 
 <script>
@@ -365,6 +567,11 @@ const PROXIES = [
 // ═══════════════════════════════════════════════════════════
 let ALL_TAPES = [];
 let activeFilter = 'all';
+// Advanced panel filters
+let panelFilters = { status: new Set(), platform: new Set(), genre: new Set() };
+// Artwork cache
+const artCache = {};
+
 
 // ═══════════════════════════════════════════════════════════
 // CSV
@@ -486,11 +693,29 @@ function doSearch() {
   const q = (document.getElementById('q').value || '').toLowerCase().trim();
   let results = ALL_TAPES;
 
-  // filter tab
-  if (activeFilter === 'digitized')   results = results.filter(t => t.digitized);
-  if (activeFilter === 'not_dig')     results = results.filter(t => !t.digitized);
-  if (activeFilter === 'published')   results = results.filter(t => t.youtube || t.instagram || t.webarchive);
-  if (activeFilter === 'not_started') results = results.filter(t => !t.digitized && !t.cover && !t.youtube && !t.instagram && !t.webarchive);
+  // Panel status filters (OR within group)
+  if (panelFilters.status.size) {
+    results = results.filter(t => {
+      if (panelFilters.status.has('digitized')   && t.digitized) return true;
+      if (panelFilters.status.has('not_dig')      && !t.digitized) return true;
+      if (panelFilters.status.has('cover')        && t.cover) return true;
+      if (panelFilters.status.has('not_started')  && !t.digitized && !t.cover && !t.youtube && !t.instagram && !t.webarchive) return true;
+      return false;
+    });
+  }
+  // Panel platform filters (OR within group)
+  if (panelFilters.platform.size) {
+    results = results.filter(t => {
+      if (panelFilters.platform.has('youtube')    && t.youtube) return true;
+      if (panelFilters.platform.has('instagram')  && t.instagram) return true;
+      if (panelFilters.platform.has('webarchive') && t.webarchive) return true;
+      return false;
+    });
+  }
+  // Panel genre filters (OR within group)
+  if (panelFilters.genre.size) {
+    results = results.filter(t => panelFilters.genre.has(t.mainGenre));
+  }
 
   if (q) {
     results = results.filter(t =>
@@ -509,7 +734,8 @@ function doSearch() {
     return;
   }
 
-  count.innerHTML = q || activeFilter !== 'all'
+  const hasFilters = panelFilters.status.size || panelFilters.platform.size || panelFilters.genre.size;
+  count.innerHTML = q || hasFilters
     ? `<b>${results.length}</b> result${results.length!==1?'s':''} found`
     : `<b>${ALL_TAPES.length}</b> tapes in collection`;
 
@@ -517,13 +743,14 @@ function doSearch() {
     document.getElementById('results').innerHTML = `
       <div class="no-results">
         <div class="icon">🔍</div>
-        <p>No tapes found for "<strong>${esc(q)}</strong>"<br>Try the artist name, album, or genre</p>
+        <p>No tapes found.<br>Try adjusting your search or filters.</p>
       </div>`;
     return;
   }
 
   document.getElementById('results').innerHTML = results.slice(0,100).map(t => tapeCard(t, q)).join('');
 }
+
 
 function tapeCard(t, q='') {
   const hi = s => q ? s.replace(new RegExp(`(${escReg(q)})`, 'gi'), '<mark>$1</mark>') : s;
@@ -545,41 +772,174 @@ function tapeCard(t, q='') {
     </div>`;
 }
 
+// ═══════════════════════════════════════════════════════════
+// FILTER PANEL
+// ═══════════════════════════════════════════════════════════
 function buildFilters() {
-  const genres = [...new Set(ALL_TAPES.map(t=>t.mainGenre).filter(Boolean))].sort().slice(0,8);
-  const btns = [
-    {k:'all',       l:'All'},
-    {k:'digitized', l:'✓ Digitized'},
-    {k:'not_dig',   l:'Not Digitized'},
-    {k:'published', l:'Published'},
-    {k:'not_started',l:'Not Started'},
-  ];
-  document.getElementById('filters').innerHTML = btns.map(b =>
-    `<button class="filter-btn ${activeFilter===b.k?'active':''}" onclick="setFilter('${b.k}')">${b.l}</button>`
-  ).join('') + genres.map(g =>
-    `<button class="filter-btn" onclick="setGenreFilter('${esc(g)}')">${esc(g)}</button>`
+  // Populate genre checkboxes dynamically
+  const genres = [...new Set(ALL_TAPES.map(t=>t.mainGenre).filter(Boolean))].sort();
+  document.getElementById('fp-genres').innerHTML = genres.map(g =>
+    `<label class="fp-opt"><input type="checkbox" value="${esc(g)}" ${panelFilters.genre.has(g)?'checked':''} onchange="applyPanelFilters()"><span>${esc(g)}</span></label>`
   ).join('');
+  // Re-sync status/platform checkboxes
+  document.querySelectorAll('#fp-status input, #fp-platform input').forEach(cb => {
+    cb.checked = panelFilters.status.has(cb.value) || panelFilters.platform.has(cb.value);
+  });
+  updateChips();
 }
 
-function setFilter(k) {
-  activeFilter = k;
-  buildFilters();
+function toggleFilterPanel() {
+  const panel = document.getElementById('filter-panel');
+  const btn = document.getElementById('filter-toggle-btn');
+  const isOpen = panel.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+}
+
+function applyPanelFilters() {
+  panelFilters.status.clear();
+  panelFilters.platform.clear();
+  panelFilters.genre.clear();
+  document.querySelectorAll('#fp-status input:checked').forEach(cb => panelFilters.status.add(cb.value));
+  document.querySelectorAll('#fp-platform input:checked').forEach(cb => panelFilters.platform.add(cb.value));
+  document.querySelectorAll('#fp-genres input:checked').forEach(cb => panelFilters.genre.add(cb.value));
+  updateChips();
   doSearch();
 }
+
+const FILTER_LABELS = {
+  digitized:'Digitized', not_dig:'Not Digitized', cover:'Cover Scanned',
+  not_started:'Not Started', youtube:'YouTube', instagram:'Instagram', webarchive:'Web Archive'
+};
+
+function updateChips() {
+  const all = [...panelFilters.status, ...panelFilters.platform, ...panelFilters.genre];
+  const container = document.getElementById('active-chips');
+  const clearBtn = document.getElementById('clear-all-btn');
+  const toggleBtn = document.getElementById('filter-toggle-btn');
+  container.innerHTML = all.map(v =>
+    `<span class="chip" onclick="removeFilter('${v}')">${FILTER_LABELS[v]||v} <span class="chip-x">×</span></span>`
+  ).join('');
+  clearBtn.style.display = all.length ? 'block' : 'none';
+  toggleBtn.classList.toggle('has-active', all.length > 0);
+}
+
+function removeFilter(val) {
+  panelFilters.status.delete(val);
+  panelFilters.platform.delete(val);
+  panelFilters.genre.delete(val);
+  // Uncheck the corresponding checkbox
+  document.querySelectorAll('#fp-status input, #fp-platform input, #fp-genres input').forEach(cb => {
+    if (cb.value === val) cb.checked = false;
+  });
+  updateChips();
+  doSearch();
+}
+
+function clearAllFilters() {
+  panelFilters.status.clear();
+  panelFilters.platform.clear();
+  panelFilters.genre.clear();
+  document.querySelectorAll('#fp-status input, #fp-platform input, #fp-genres input').forEach(cb => cb.checked = false);
+  document.getElementById('q').value = '';
+  updateChips();
+  doSearch();
+}
+
+function setFilter(k) { activeFilter = k; doSearch(); }
 function setGenreFilter(g) {
   document.getElementById('q').value = g;
   activeFilter = 'all';
-  buildFilters();
   doSearch();
 }
 
+
+
 // ═══════════════════════════════════════════════════════════
-// COLLECTION PAGE
+// COLLECTION PAGE — GRID WITH ARTWORK
 // ═══════════════════════════════════════════════════════════
 function renderCollection() {
   document.getElementById('col-count').textContent = ALL_TAPES.length + ' tapes';
-  document.getElementById('col-list').innerHTML = ALL_TAPES.map(t => tapeCard(t)).join('');
+  document.getElementById('col-list').innerHTML = ALL_TAPES.map(t => colTile(t)).join('');
+  // Lazy-load artwork for visible tiles
+  ALL_TAPES.forEach(t => fetchArtwork(t));
 }
+
+function colTile(t) {
+  const statusColor = t.digitized ? 'var(--grn)' : (t.cover ? 'var(--blu)' : 'var(--faint)');
+  const initials = (t.artist||'?').split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const tags = [
+    t.digitized  ? `<span class="tag tag-dig">✓</span>` : '',
+    t.mainGenre  ? `<span class="tag tag-genre">${esc(t.mainGenre)}</span>` : '',
+    t.youtube    ? `<span class="tag tag-yt">YT</span>` : '',
+    t.instagram  ? `<span class="tag tag-ig">IG</span>` : '',
+    t.webarchive ? `<span class="tag tag-wa">Arc</span>` : '',
+  ].filter(Boolean).slice(0,3).join('');
+  return `
+    <div class="col-tile">
+      <div class="col-art" id="art-${t.ref}">
+        <div class="col-art-placeholder">
+          <span class="art-initials">${initials}</span>
+          <span class="art-ref">#${t.ref}</span>
+        </div>
+        <div class="col-art-status" style="background:${statusColor}"></div>
+      </div>
+      <div class="col-tile-info">
+        <div class="col-tile-artist" title="${esc(t.artist)}">${esc(t.artist)}</div>
+        <div class="col-tile-album" title="${esc(t.album||'—')}">${esc(t.album||'—')}</div>
+        <div class="col-tile-tags">${tags}</div>
+      </div>
+    </div>`;
+}
+
+async function fetchArtwork(t) {
+  const key = `${t.artist}__${t.album}`.toLowerCase();
+  if (artCache[key] !== undefined) {
+    if (artCache[key]) injectArt(t.ref, artCache[key]);
+    return;
+  }
+  artCache[key] = null; // mark as fetching
+
+  // Search MusicBrainz for the release
+  const q = encodeURIComponent(`artist:"${t.artist}" release:"${t.album||t.artist}"`);
+  try {
+    const mbRes = await fetch(`https://musicbrainz.org/ws/2/release/?query=${q}&limit=1&fmt=json`, {
+      headers: {'User-Agent': 'TapeArchiveApp/1.0'}
+    });
+    if (!mbRes.ok) return;
+    const mbData = await mbRes.json();
+    const release = mbData.releases?.[0];
+    if (!release?.id) return;
+
+    const mbid = release.id;
+    const imgUrl = `https://coverartarchive.org/release/${mbid}/front-250`;
+    // Verify the image exists
+    const imgRes = await fetch(imgUrl, {method:'HEAD'});
+    if (imgRes.ok) {
+      artCache[key] = imgUrl;
+      injectArt(t.ref, imgUrl);
+    }
+  } catch(e) { /* silent fail — placeholder stays */ }
+}
+
+function injectArt(ref, url) {
+  const container = document.getElementById(`art-${ref}`);
+  if (!container) return;
+  const img = document.createElement('img');
+  img.className = 'loading';
+  img.src = url;
+  img.alt = '';
+  img.onload = () => {
+    img.classList.remove('loading');
+    img.classList.add('loaded');
+    // Hide placeholder
+    const ph = container.querySelector('.col-art-placeholder');
+    if (ph) ph.style.display = 'none';
+  };
+  img.onerror = () => img.remove();
+  container.appendChild(img);
+}
+
+
 
 // ═══════════════════════════════════════════════════════════
 // DASHBOARD
