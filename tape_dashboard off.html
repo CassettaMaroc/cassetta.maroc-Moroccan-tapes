@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🎞 Tape Archive Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{--bg:#0c0c10;--s1:#14141c;--s2:#1c1c28;--s3:#242434;--bdr:#2e2e42;--acc:#f5c842;--acc2:#ff6b35;--grn:#3ddc84;--blu:#5b9cf6;--pur:#c084fc;--red:#f87171;--tel:#22d3ee;--txt:#e2e2f0;--mut:#6b6b8a;--ff:'Syne',sans-serif;--fm:'JetBrains Mono',monospace}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:var(--ff);min-height:100vh;overflow-x:hidden}
+  body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--bdr) 1px,transparent 1px),linear-gradient(90deg,var(--bdr) 1px,transparent 1px);background-size:40px 40px;opacity:.15;pointer-events:none;z-index:0}
+  .topbar{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:64px;background:var(--s1);border-bottom:1px solid var(--bdr)}
+  .topbar-left{display:flex;align-items:center;gap:14px}
+  .logo-icon{width:36px;height:36px;background:var(--acc);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+  .logo-text{font-size:18px;font-weight:800;letter-spacing:1px}
+  .logo-text span{color:var(--acc)}
+  .live-badge{font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:20px;background:rgba(61,220,132,.12);color:var(--grn);border:1px solid rgba(61,220,132,.25);display:none;align-items:center;gap:5px}
+  .live-badge.on{display:inline-flex}
+  .live-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .topbar-right{font-family:var(--fm);font-size:10px;color:var(--mut)}
+  .urlbar{position:relative;z-index:10;background:var(--s2);border-bottom:1px solid var(--bdr);padding:14px 32px}
+  .urlbar-inner{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;max-width:1300px;margin:0 auto}
+  .urlbar label{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--acc);text-transform:uppercase;white-space:nowrap;padding-top:11px}
+  .urlbar input{flex:1;min-width:240px;background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:9px 14px;color:var(--txt);font-family:var(--fm);font-size:11px;outline:none;transition:border-color .2s,box-shadow .2s}
+  .urlbar input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(245,200,66,.1)}
+  .urlbar input::placeholder{color:var(--mut)}
+  .btn{padding:9px 22px;border-radius:8px;border:none;cursor:pointer;font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .15s;white-space:nowrap}
+  .btn-primary{background:var(--acc);color:#000}
+  .btn-primary:hover{background:#ffd94d;transform:translateY(-1px)}
+  .btn-help{background:var(--s3);color:var(--mut);border:1px solid var(--bdr)}
+  .btn-help:hover{color:var(--txt)}
+  .url-error{width:100%;font-family:var(--fm);font-size:11px;color:var(--red);margin-top:6px;display:none;background:rgba(248,113,113,.08);padding:10px 14px;border-radius:6px;border-left:3px solid var(--red);line-height:1.6}
+  .url-error.show{display:block}
+  main{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:28px 32px 80px}
+  #empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;text-align:center}
+  .empty-tape{font-size:80px;opacity:.25;animation:float 4s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  #empty h2{font-size:28px;font-weight:800;color:var(--mut)}
+  #empty p{font-family:var(--fm);font-size:12px;color:var(--mut);max-width:440px;line-height:1.7}
+  .steps{display:flex;flex-direction:column;gap:10px;background:var(--s2);border:1px solid var(--bdr);border-radius:12px;padding:20px 24px;text-align:left;max-width:420px;width:100%}
+  .step{display:flex;gap:12px;align-items:flex-start;font-size:13px;line-height:1.5}
+  .step-n{width:22px;height:22px;border-radius:50%;background:var(--acc);color:#000;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  #loading{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px}
+  .spinner{width:48px;height:48px;border-radius:50%;border:3px solid var(--bdr);border-top-color:var(--acc);animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loading p{font-family:var(--fm);font-size:12px;color:var(--mut)}
+  #dash{display:none}
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:28px}
+  .kpi{background:var(--s1);border:1px solid var(--bdr);border-radius:12px;padding:18px 16px 14px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
+  .kpi:hover{transform:translateY(-3px);border-color:var(--kc,var(--acc));box-shadow:0 8px 24px rgba(0,0,0,.3)}
+  .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--acc))}
+  .kpi-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--mut);text-transform:uppercase;margin-bottom:8px}
+  .kpi-val{font-size:38px;font-weight:800;color:var(--kc,var(--acc));line-height:1}
+  .kpi-sub{font-size:11px;color:var(--mut);margin-top:5px}
+  .sec-title{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--mut);margin-bottom:14px;margin-top:28px;display:flex;align-items:center;gap:10px}
+  .sec-title::after{content:'';flex:1;height:1px;background:var(--bdr)}
+  .prog-card{background:var(--s1);border:1px solid var(--bdr);border-radius:12px;padding:24px;margin-bottom:28px;display:flex;align-items:center;gap:32px;flex-wrap:wrap}
+  .prog-big{font-size:72px;font-weight:800;color:var(--grn);line-height:1;flex-shrink:0}
+  .prog-right{flex:1;min-width:200px}
+  .prog-label{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--mut);margin-bottom:8px}
+  .prog-track{background:var(--bdr);border-radius:6px;height:10px;overflow:hidden;margin-bottom:16px}
+  .prog-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--grn),var(--tel));width:0%;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+  .prog-stats{display:flex;gap:20px;flex-wrap:wrap}
+  .pstat{display:flex;flex-direction:column;gap:2px}
+  .pstat-v{font-size:22px;font-weight:800}
+  .pstat-l{font-family:var(--fm);font-size:9px;color:var(--mut);letter-spacing:1px;text-transform:uppercase}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--s1);border:1px solid var(--bdr);border-radius:12px;padding:20px}
+  .card-title{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--mut);text-transform:uppercase;margin-bottom:16px}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+  .bar-name{font-size:12px;font-weight:600;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar-track{flex:1;background:var(--bdr);border-radius:4px;height:8px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:4px;width:0%;transition:width 1.1s cubic-bezier(.4,0,.2,1)}
+  .bar-num{font-family:var(--fm);font-size:10px;color:var(--mut);flex-shrink:0;width:36px;text-align:right}
+  .donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .donut-legend{flex:1;min-width:120px}
+  .leg-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:12px}
+  .leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .leg-val{font-family:var(--fm);font-size:10px;color:var(--mut);margin-left:auto}
+  .atab{width:100%;border-collapse:collapse}
+  .atab th{font-family:var(--fm);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr)}
+  .atab td{padding:8px 8px;font-size:12px;border-bottom:1px solid rgba(46,46,66,.5)}
+  .atab tr:last-child td{border:none}
+  .atab tr:hover td{background:var(--s2)}
+  .tag{display:inline-block;padding:2px 7px;border-radius:12px;font-family:var(--fm);font-size:9px;font-weight:700}
+  .tag-y{background:rgba(61,220,132,.12);color:var(--grn)}
+  .tag-n{background:rgba(107,107,138,.1);color:var(--mut)}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--s2);border:1px solid var(--bdr);border-radius:16px;padding:28px;max-width:500px;width:100%;position:relative}
+  .modal h3{font-size:18px;font-weight:800;margin-bottom:16px}
+  .modal ol{padding-left:18px;display:flex;flex-direction:column;gap:10px}
+  .modal li{font-size:13px;line-height:1.6;color:var(--mut)}
+  .modal li strong{color:var(--txt)}
+  .modal-code{font-family:var(--fm);font-size:10px;background:var(--s3);padding:6px 10px;border-radius:6px;color:var(--acc);margin-top:6px;word-break:break-all;display:block}
+  .modal-close{position:absolute;top:16px;right:16px;background:var(--s3);border:none;color:var(--mut);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .modal-close:hover{color:var(--txt)}
+  .modal-warn{margin-top:16px;padding:10px 14px;background:rgba(248,113,113,.08);border-left:3px solid var(--red);border-radius:0 6px 6px 0;font-size:12px;color:var(--mut);font-family:var(--fm);line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h3>📋 How to get the Google Sheets URL</h3>
+    <ol>
+      <li>Open your Google Sheet</li>
+      <li>Click <strong>File → Share → Publish to web</strong></li>
+      <li>First dropdown → select your <strong>sheet tab name</strong> (e.g. Sheet1)</li>
+      <li>Second dropdown → select <strong>Comma-separated values (.csv)</strong></li>
+      <li>Click <strong>Publish</strong> → confirm → copy the URL<br>
+        <span class="modal-code">https://docs.google.com/spreadsheets/d/e/…/pub?gid=0&single=true&output=csv</span>
+      </li>
+      <li>Paste that URL in the box above and click <strong>Load</strong></li>
+    </ol>
+    <div class="modal-warn">
+      ⚠ You must use <strong style="color:var(--txt)">Publish to web</strong> — NOT the regular "Share" button. They are completely different. The regular share link will NOT work.
+    </div>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-icon">🎞</div>
+    <div class="logo-text">TAPE <span>ARCHIVE</span></div>
+    <div class="live-badge" id="live-badge">LIVE</div>
+  </div>
+  <div class="topbar-right" id="updated-at">not connected</div>
+</div>
+
+<div class="urlbar">
+  <div class="urlbar-inner">
+    <label>Google Sheet URL</label>
+    <input type="text" id="url-input" placeholder="Paste your published CSV URL here and press Enter…"/>
+    <button class="btn btn-primary" onclick="loadData()">↻ Load</button>
+    <button class="btn btn-help" onclick="openModal()">? How to get URL</button>
+    <div class="url-error" id="url-error"></div>
+  </div>
+</div>
+
+<main>
+  <div id="empty">
+    <div class="empty-tape">🎞</div>
+    <h2>Connect your Google Sheet</h2>
+    <p>Paste your published CSV URL above and press Enter or click Load.</p>
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><div>Google Sheet → <strong>File → Share → Publish to web</strong></div></div>
+      <div class="step"><div class="step-n">2</div><div>Select your sheet tab + <strong>CSV format</strong> → click Publish</div></div>
+      <div class="step"><div class="step-n">3</div><div>Copy the URL → paste above → click <strong>Load</strong></div></div>
+    </div>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <p id="loading-msg">Connecting…</p>
+  </div>
+
+  <div id="dash">
+    <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="sec-title">Overall Progress</div>
+    <div class="prog-card">
+      <div class="prog-big" id="pct-big">0%</div>
+      <div class="prog-right">
+        <div class="prog-label">Tapes Digitized</div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+        <div class="prog-stats" id="prog-stats"></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Digitization Status</div>
+        <div class="donut-wrap">
+          <canvas id="donut" width="130" height="130"></canvas>
+          <div class="donut-legend" id="donut-leg"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Published on Platforms</div>
+        <div id="plat-bars"></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Top Genres</div>
+        <div id="genre-bars"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Top Artists</div>
+        <table class="atab">
+          <thead><tr><th>#</th><th>Artist</th><th>Tapes</th><th>Digitized</th></tr></thead>
+          <tbody id="artist-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sec-title">Top Labels</div>
+    <div class="card" style="margin-bottom:32px">
+      <div id="label-bars" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 32px"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── CSV parser ─────────────────────────────────────────────────────────────
+function parseCSV(txt) {
+  const lines = txt.trim().split(/\r?\n/);
+  if (lines.length < 2) return [];
+  const headers = splitLine(lines[0]);
+  return lines.slice(1).map(l => {
+    const v = splitLine(l), o = {};
+    headers.forEach((h,i) => o[h.trim()] = (v[i]||'').trim());
+    return o;
+  });
+}
+function splitLine(l) {
+  const r=[]; let cur='', q=false;
+  for (const c of l) {
+    if (c==='"') q=!q;
+    else if (c===',' && !q) { r.push(cur); cur=''; }
+    else cur+=c;
+  }
+  r.push(cur); return r;
+}
+
+const isYes    = v => String(v||'').trim().toUpperCase()==='YES';
+const isPosted = v => String(v||'').trim().toLowerCase()==='posted';
+const mg       = g => g ? String(g).split(/[,\/]/)[0].trim() : 'Unknown';
+
+// ── Build candidate CSV URLs from whatever the user pastes ─────────────────
+function buildUrls(raw) {
+  raw = raw.trim();
+  if (raw.includes('output=csv')) return [raw];
+  if (raw.includes('/pub?')) return [raw + (raw.includes('output=') ? '' : '&output=csv')];
+  const m = raw.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (!m) return [raw];
+  const id = m[1];
+  return [
+    `https://docs.google.com/spreadsheets/d/${id}/pub?output=csv`,
+    `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv`,
+    `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`,
+  ];
+}
+
+// ── CORS proxies (tried in order) ──────────────────────────────────────────
+const PROXIES = [
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  u => `https://thingproxy.freeboard.io/fetch/${u}`,
+];
+
+async function tryFetch(url, timeout=8000) {
+  const ctrl = new AbortController();
+  const tid = setTimeout(() => ctrl.abort(), timeout);
+  try {
+    const r = await fetch(url, {signal: ctrl.signal});
+    clearTimeout(tid);
+    if (!r.ok) return null;
+    const t = await r.text();
+    return t.length > 30 ? t : null;
+  } catch(e) { clearTimeout(tid); return null; }
+}
+
+async function fetchCSV(rawUrl) {
+  const candidates = buildUrls(rawUrl);
+  msg('Trying direct connection…');
+
+  // 1. Try each candidate URL directly
+  for (const url of candidates) {
+    const t = await tryFetch(url, 5000);
+    if (t) return t;
+  }
+
+  // 2. Try each proxy with each candidate URL
+  for (const proxy of PROXIES) {
+    for (const url of candidates) {
+      msg('Trying via proxy…');
+      const t = await tryFetch(proxy(url), 8000);
+      if (t) return t;
+    }
+  }
+  return null;
+}
+
+// ── LOAD ──────────────────────────────────────────────────────────────────
+async function loadData() {
+  const raw = document.getElementById('url-input').value.trim();
+  if (!raw) { showErr('Please paste your Google Sheets published CSV URL first.'); return; }
+  hideErr();
+  show('loading','flex'); hide('empty'); hide('dash');
+  msg('Connecting to Google Sheets…');
+
+  const text = await fetchCSV(raw);
+
+  if (!text) {
+    hide('loading'); show('empty','flex');
+    showErr(
+      '❌ Cannot connect to Google Sheets. Most common fix:<br><br>' +
+      '1. In Google Sheets go to <strong>File → Share → Publish to web</strong><br>' +
+      '2. Choose your sheet tab + <strong>Comma-separated values (.csv)</strong><br>' +
+      '3. Click <strong>Publish</strong> and copy the new URL<br><br>' +
+      'The regular "Share" link will NOT work — you need <strong>Publish to web</strong>. Click "? How to get URL" for details.'
+    );
+    return;
+  }
+
+  try {
+    let rows = parseCSV(text);
+    // If headers don't contain 'Artist', scan for right header row
+    if (!Object.keys(rows[0]||{}).includes('Artist')) {
+      const lines = text.trim().split(/\r?\n/);
+      const hi = lines.findIndex(l => /artist/i.test(l));
+      if (hi > 0) rows = parseCSV(lines.slice(hi).join('\n'));
+    }
+    rows = rows.filter(r => {
+      const a = (r['Artist']||r['ARTIST']||'').trim();
+      return a && !['Artist','Artiste','ARTIST'].includes(a);
+    });
+    if (!rows.length) throw new Error('No tape data rows found in sheet');
+    render(rows);
+    try { localStorage.setItem('tape_url', raw); } catch(e) {}
+  } catch(e) {
+    hide('loading'); show('empty','flex');
+    showErr('⚠ Data loaded but could not be parsed. Make sure Sheet1 is selected as CSV. (' + e.message + ')');
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+const COLS = ['#5b9cf6','#3ddc84','#f5c842','#c084fc','#22d3ee','#f87171','#fb923c','#a3e635','#818cf8','#34d399','#fbbf24','#f472b6'];
+
+function render(rows) {
+  const total = rows.length;
+  const getField = (r, ...keys) => { for (const k of keys) if (r[k] !== undefined) return r[k]; return ''; };
+  const dig = rows.filter(r => isYes(getField(r,'Digitized','DIGITIZED'))).length;
+  const cov = rows.filter(r => isYes(getField(r,'COVER_SCAN','Cover Scan','COVER SCAN','Cover_Scan'))).length;
+  const yt  = rows.filter(r => isPosted(getField(r,'YOUTUBE','Youtube','YouTube'))).length;
+  const ig  = rows.filter(r => isPosted(getField(r,'INSTAGRAM','Instagram'))).length;
+  const wa  = rows.filter(r => isPosted(getField(r,'WEBARCHIVE','WebArchive','Web Archive','WEBARCHIVE'))).length;
+  const ns  = rows.filter(r =>
+    !isYes(getField(r,'Digitized','DIGITIZED')) &&
+    !isYes(getField(r,'COVER_SCAN','Cover Scan','COVER SCAN')) &&
+    !isPosted(getField(r,'YOUTUBE','Youtube')) &&
+    !isPosted(getField(r,'INSTAGRAM','Instagram')) &&
+    !isPosted(getField(r,'WEBARCHIVE','WebArchive'))
+  ).length;
+  const pct = total ? Math.round(dig/total*100) : 0;
+
+  const gmap={}, lmap={}, amap={};
+  rows.forEach(r => {
+    const g = mg(getField(r,'Genre_Category','Genre / Category','Genre','GENRE'));
+    gmap[g] = (gmap[g]||0)+1;
+    const l = (getField(r,'Label_Notes','Label / Notes','Label','LABEL')||'').trim();
+    if (l && l!=='undefined') lmap[l]=(lmap[l]||0)+1;
+    const a = (getField(r,'Artist','ARTIST')||'').trim();
+    if (a) { if(!amap[a]) amap[a]={t:0,d:0}; amap[a].t++; if(isYes(getField(r,'Digitized','DIGITIZED'))) amap[a].d++; }
+  });
+
+  const genres  = Object.entries(gmap).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  const labels  = Object.entries(lmap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const artists = Object.entries(amap).sort((a,b)=>b[1].t-a[1].t).slice(0,12);
+
+  // KPIs
+  document.getElementById('kpi-grid').innerHTML = [
+    {l:'Total Tapes',  v:total,   s:'in collection',              c:'var(--acc)'},
+    {l:'Digitized',    v:dig,     s:`${pct}% complete`,           c:'var(--grn)'},
+    {l:'Cover Scanned',v:cov,     s:`${pct_(cov,total)}% total`,  c:'var(--blu)'},
+    {l:'Not Started',  v:ns,      s:`${pct_(ns,total)}% remain`,  c:'var(--red)'},
+    {l:'YouTube',      v:yt,      s:'published',                  c:'#ff4444'},
+    {l:'Instagram',    v:ig,      s:'published',                  c:'var(--pur)'},
+    {l:'WebArchive',   v:wa,      s:'archived',                   c:'var(--tel)'},
+    {l:'Total Published',v:yt+ig+wa,s:'across platforms',         c:'var(--acc2)'},
+  ].map(k=>`<div class="kpi" style="--kc:${k.c}"><div class="kpi-lbl">${k.l}</div><div class="kpi-val">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join('');
+
+  // Progress
+  document.getElementById('pct-big').textContent = pct+'%';
+  setTimeout(()=>{ document.getElementById('prog-fill').style.width=pct+'%'; },100);
+  document.getElementById('prog-stats').innerHTML = [
+    {v:dig,l:'Digitized',c:'var(--grn)'},{v:cov,l:'Cover Scan',c:'var(--blu)'},
+    {v:ns, l:'Not Started',c:'var(--red)'},{v:yt+ig+wa,l:'Published',c:'var(--pur)'},
+  ].map(s=>`<div class="pstat"><span class="pstat-v" style="color:${s.c}">${s.v}</span><span class="pstat-l">${s.l}</span></div>`).join('');
+
+  // Donut
+  const dSegs=[
+    {l:'Digitized',  v:dig,                      c:'#3ddc84'},
+    {l:'Cover Only', v:Math.max(0,cov-dig),       c:'#5b9cf6'},
+    {l:'In Progress',v:Math.max(0,total-dig-ns),  c:'#f5c842'},
+    {l:'Not Started',v:ns,                        c:'#f87171'},
+  ].filter(s=>s.v>0);
+  drawDonut(dSegs,total,pct);
+
+  // Platform bars
+  document.getElementById('plat-bars').innerHTML=[
+    {n:'YouTube',v:yt,c:'#ff4444'},{n:'Instagram',v:ig,c:'#c084fc'},{n:'WebArchive',v:wa,c:'#22d3ee'},
+  ].map(p=>barRow(p.n,p.v,total,p.c,90)).join('');
+
+  // Genre bars
+  const gmax=genres[0]?.[1]||1;
+  document.getElementById('genre-bars').innerHTML=genres.map(([g,c],i)=>barRow(g,c,gmax,COLS[i%COLS.length],110)).join('');
+
+  // Artists
+  document.getElementById('artist-tbody').innerHTML=artists.map(([a,d],i)=>`
+    <tr><td style="color:var(--mut);font-family:var(--fm);font-size:10px">${i+1}</td>
+    <td style="font-weight:600">${esc(a)}</td>
+    <td style="font-family:var(--fm);color:var(--acc)">${d.t}</td>
+    <td><span class="tag ${d.d>0?'tag-y':'tag-n'}">${d.d>0?d.d+' ✓':'—'}</span></td></tr>`).join('');
+
+  // Labels
+  const lmax=labels[0]?.[1]||1;
+  document.getElementById('label-bars').innerHTML=labels.map(([l,c],i)=>barRow(l,c,lmax,COLS[i%COLS.length],130)).join('');
+
+  setTimeout(()=>{ document.querySelectorAll('.bar-fill').forEach(b=>{ b.style.width=b.dataset.p+'%'; }); },200);
+
+  hide('loading'); hide('empty'); show('dash','block');
+  document.getElementById('live-badge').classList.add('on');
+  const now=new Date();
+  document.getElementById('updated-at').textContent=`Updated ${now.toLocaleDateString()} ${now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
+}
+
+function barRow(name,val,max,color,w){
+  const p=Math.round(val/max*100);
+  return `<div class="bar-row">
+    <span class="bar-name" style="width:${w}px;color:${color}" title="${esc(name)}">${esc(name)}</span>
+    <div class="bar-track"><div class="bar-fill" style="background:${color}" data-p="${p}"></div></div>
+    <span class="bar-num">${val}</span></div>`;
+}
+
+function drawDonut(segs,total,pct){
+  const cv=document.getElementById('donut'),cx=cv.getContext('2d');
+  cx.clearRect(0,0,130,130);
+  let a=-Math.PI/2;
+  segs.forEach(s=>{ const sl=s.v/total*2*Math.PI; cx.beginPath(); cx.moveTo(65,65); cx.arc(65,65,58,a,a+sl); cx.closePath(); cx.fillStyle=s.c; cx.fill(); a+=sl; });
+  cx.beginPath(); cx.arc(65,65,36,0,2*Math.PI); cx.fillStyle='#14141c'; cx.fill();
+  cx.fillStyle='#e2e2f0'; cx.font='bold 15px Syne,sans-serif'; cx.textAlign='center'; cx.fillText(pct+'%',65,71);
+  document.getElementById('donut-leg').innerHTML=segs.map(s=>`<div class="leg-row"><div class="leg-dot" style="background:${s.c}"></div><span>${s.l}</span><span class="leg-val">${s.v}</span></div>`).join('');
+}
+
+function pct_(v,t){ return t ? Math.round(v/t*100) : 0; }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function msg(m){ document.getElementById('loading-msg').textContent=m; }
+function show(id,d='flex'){ document.getElementById(id).style.display=d; }
+function hide(id){ document.getElementById(id).style.display='none'; }
+function showErr(m){ const e=document.getElementById('url-error'); e.innerHTML=m; e.classList.add('show'); }
+function hideErr(){ document.getElementById('url-error').classList.remove('show'); }
+function openModal(){ document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
+window.addEventListener('DOMContentLoaded',()=>{
+  try{ const s=localStorage.getItem('tape_url'); if(s) document.getElementById('url-input').value=s; }catch(e){}
+  document.getElementById('url-input').addEventListener('keydown',e=>{ if(e.key==='Enter') loadData(); });
+});
+</script>
+</body>
+</html>
