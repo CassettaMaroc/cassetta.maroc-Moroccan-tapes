@@ -277,21 +277,17 @@ async function loadData() {
   }
 
   try {
-    let rows = parseCSV(text);
-
-    // Find the correct header row by looking for 'Artist' column
-    if (!Object.keys(rows[0] || {}).includes('Artist')) {
-      const lines = text.trim().split(/
-?
-/);
-      const hi = lines.findIndex(l => l.includes('Artist'));
-      if (hi >= 0) rows = parseCSV(lines.slice(hi).join('\n'));
-    }
+    // Your sheet has a title row ("digitalised tape") before real headers.
+    // Find the line containing both 'Artist' and 'Digitized' — that's the real header.
+    const rawLines = text.trim().split(/\r?\n/);
+    const headerIdx = rawLines.findIndex(l => l.includes('Artist') && l.includes('Digitized'));
+    const cleanText = headerIdx > 0 ? rawLines.slice(headerIdx).join('\n') : text;
+    let rows = parseCSV(cleanText);
 
     // Filter to only real tape rows
     rows = rows.filter(r => {
       const a = (r[COL.artist] || '').trim();
-      return a && !['Artist', 'Artiste', 'ARTIST'].includes(a);
+      return a && !['Artist', 'Artiste', 'ARTIST', ''].includes(a);
     });
 
     if (!rows.length) throw new Error('No tape data found');
