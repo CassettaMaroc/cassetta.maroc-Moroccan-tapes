@@ -7,226 +7,59 @@
 
 <title>Moroccan Tape Archive</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 
 :root{
---bg:#0e0f12;
---card:#17181d;
---border:#262830;
---accent:#f4c542;
---text:#e8e8ef;
---muted:#8c8fa1;
---green:#37d67a;
---blue:#6aa4ff;
---red:#f87171;
---radius:14px;
-}
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
+--bg:#0d0d12;
+--card:#16161f;
+--border:#2c2c3c;
+--accent:#f5c842;
+--text:#e4e4f0;
+--muted:#777793;
 }
 
 body{
 background:var(--bg);
 color:var(--text);
-font-family:Inter, sans-serif;
+font-family:'Syne',sans-serif;
+margin:0;
 }
 
-.container{
-max-width:1000px;
-margin:auto;
-padding:20px;
-}
-
-nav{
-background:var(--card);
+header{
+background:#12121a;
 border-bottom:1px solid var(--border);
-position:sticky;
-top:0;
-z-index:10;
-}
-
-.nav-inner{
-max-width:1000px;
-margin:auto;
+padding:18px;
 display:flex;
+justify-content:space-between;
 align-items:center;
-gap:20px;
-padding:14px 20px;
 }
 
-.brand{
-font-weight:700;
-letter-spacing:.5px;
+.logo{
+font-weight:800;
+font-size:18px;
 color:var(--accent);
 }
 
-.tabs{
-display:flex;
-gap:10px;
-margin-left:auto;
-}
-
-.tab{
+nav button{
 background:none;
 border:none;
 color:var(--muted);
-cursor:pointer;
-font-family:"JetBrains Mono";
-font-size:12px;
-padding:8px 14px;
-border-radius:8px;
-}
-
-.tab:hover{
-color:white;
-background:#22242c;
-}
-
-.tab.active{
-background:var(--accent);
-color:black;
-font-weight:700;
-}
-
-.sync{
-margin-left:10px;
-background:#22242c;
-border:1px solid var(--border);
-padding:8px 14px;
-border-radius:8px;
-color:white;
+font-family:'JetBrains Mono',monospace;
+font-size:11px;
+margin-left:14px;
 cursor:pointer;
 }
 
-.hero{
-text-align:center;
-padding:40px 0 20px;
-}
-
-.hero h1{
-font-size:38px;
-margin-bottom:6px;
-}
-
-.hero span{
+nav button.active{
 color:var(--accent);
-}
-
-.hero p{
-color:var(--muted);
-font-family:"JetBrains Mono";
-font-size:13px;
-}
-
-.search-box{
-margin-top:24px;
-position:relative;
-}
-
-.search-box input{
-width:100%;
-padding:16px;
-border-radius:var(--radius);
-border:1px solid var(--border);
-background:var(--card);
-color:white;
-font-size:16px;
-}
-
-.search-box input:focus{
-outline:none;
-border-color:var(--accent);
-}
-
-.results{
-margin-top:30px;
-}
-
-.card{
-background:var(--card);
-border:1px solid var(--border);
-border-radius:var(--radius);
-padding:16px;
-margin-bottom:12px;
-display:flex;
-gap:14px;
-transition:.2s;
-}
-
-.card:hover{
-border-color:var(--accent);
-transform:translateX(4px);
-}
-
-.ref{
-font-family:"JetBrains Mono";
-color:var(--muted);
-width:40px;
-}
-
-.artist{
-font-weight:700;
-font-size:15px;
-}
-
-.album{
-font-size:13px;
-color:var(--muted);
-margin-top:3px;
-}
-
-.tags{
-margin-top:6px;
-display:flex;
-gap:6px;
-flex-wrap:wrap;
-}
-
-.tag{
-font-size:10px;
-font-family:"JetBrains Mono";
-padding:4px 8px;
-border-radius:20px;
-}
-
-.tag.genre{background:#1f2d48;color:#6aa4ff}
-.tag.dig{background:#193c2b;color:#37d67a}
-.tag.not{background:#333;color:#aaa}
-.tag.yt{background:#3a1c1c;color:#ff5a5a}
-.tag.ig{background:#392347;color:#c084fc}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-gap:14px;
-margin-top:30px;
-}
-
-.stat{
-background:var(--card);
-border:1px solid var(--border);
-border-radius:var(--radius);
-padding:18px;
-text-align:center;
-}
-
-.stat h2{
-font-size:32px;
-color:var(--accent);
-}
-
-.stat p{
-color:var(--muted);
-font-size:12px;
-margin-top:6px;
 }
 
 .page{
+max-width:900px;
+margin:auto;
+padding:30px 20px 80px;
 display:none;
 }
 
@@ -234,60 +67,136 @@ display:none;
 display:block;
 }
 
-footer{
-margin-top:50px;
-text-align:center;
-font-size:12px;
+h1{
+font-size:36px;
+margin-bottom:10px;
+}
+
+.searchbox{
+margin:25px 0;
+}
+
+.searchbox input{
+width:100%;
+padding:15px;
+border-radius:10px;
+border:1px solid var(--border);
+background:#15151e;
+color:white;
+font-size:16px;
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:12px;
+padding:16px;
+margin-bottom:12px;
+display:flex;
+gap:14px;
+}
+
+.ref{
+font-family:'JetBrains Mono',monospace;
 color:var(--muted);
-padding-bottom:40px;
+min-width:35px;
+}
+
+.artist{
+font-weight:700;
+}
+
+.album{
+color:var(--muted);
+font-size:14px;
+margin-top:3px;
+}
+
+.tags{
+margin-top:8px;
+display:flex;
+flex-wrap:wrap;
+gap:6px;
+}
+
+.tag{
+font-size:9px;
+padding:4px 7px;
+border-radius:10px;
+font-family:'JetBrains Mono',monospace;
+}
+
+.genre{background:#223c74;color:#6fa8ff;}
+.dig{background:#1e5338;color:#4dff9f;}
+.not{background:#3a3a45;color:#9a9ab0;}
+.yt{background:#541a1a;color:#ff7070;}
+.ig{background:#472f59;color:#d69aff;}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px;
+margin-top:20px;
+}
+
+.stat{
+background:var(--card);
+padding:20px;
+border-radius:12px;
+border:1px solid var(--border);
+text-align:center;
+}
+
+.stat h2{
+font-size:32px;
+color:var(--accent);
+margin:0;
+}
+
+.stat p{
+font-size:11px;
+color:var(--muted);
+margin-top:4px;
+font-family:'JetBrains Mono',monospace;
 }
 
 </style>
+
 </head>
 
 <body>
 
+<header>
+
+<div class="logo">📼 Tape Archive</div>
+
 <nav>
-<div class="nav-inner">
-
-<div class="brand">🎞 Moroccan Tape Archive</div>
-
-<div class="tabs">
-<button class="tab active" onclick="showPage('search',this)">Search</button>
-<button class="tab" onclick="showPage('dashboard',this)">Dashboard</button>
-<button class="tab" onclick="showPage('collection',this)">Collection</button>
-</div>
-
-<button class="sync" onclick="loadData()">Sync</button>
-
-</div>
+<button class="active" onclick="showPage('search',this)">Search</button>
+<button onclick="showPage('dashboard',this)">Dashboard</button>
+<button onclick="showPage('collection',this)">Collection</button>
 </nav>
 
-<div class="container">
+</header>
 
-<!-- SEARCH PAGE -->
-<div id="search" class="page active">
+<!-- SEARCH -->
 
-<div class="hero">
-<h1>Find a <span>Tape</span></h1>
-<p>Search your Moroccan cassette archive</p>
+<div class="page active" id="search">
+
+<h1>Find a Tape</h1>
+
+<div class="searchbox">
+<input id="q" placeholder="Search artist, album, genre…" oninput="search()">
 </div>
 
-<div class="search-box">
-<input type="search" id="q" placeholder="Artist, album, genre..." oninput="doSearch()">
-</div>
-
-<div id="results" class="results"></div>
+<div id="results"></div>
 
 </div>
-
 
 <!-- DASHBOARD -->
-<div id="dashboard" class="page">
 
-<div class="hero">
-<h1>Archive <span>Dashboard</span></h1>
-</div>
+<div class="page" id="dashboard">
+
+<h1>Archive Stats</h1>
 
 <div class="stats">
 
@@ -310,98 +219,79 @@ padding-bottom:40px;
 
 </div>
 
-
 <!-- COLLECTION -->
-<div id="collection" class="page">
 
-<div class="hero">
-<h1>Full <span>Collection</span></h1>
-</div>
+<div class="page" id="collection">
 
-<div id="collection-list"></div>
+<h1>Full Collection</h1>
 
-</div>
-
-<footer>
-Moroccan Cassette Archive • Digital Preservation Project
-</footer>
+<div id="collectionlist"></div>
 
 </div>
 
 <script>
 
-const SHEET_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1YCCoP2M9d_QiOHHYyVLXdL_nFAxhuo3cW1c2nl8T1goEYyHtgNnVwyskR6UnowzW7mTv7K9twuy7/pub?output=csv";
+const SHEET="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ1YCCoP2M9d_QiOHHYyVLXdL_nFAxhuo3cW1c2nl8T1goEYyHtgNnVwyskR6UnowzW7mTv7K9twuy7/pub?output=csv";
 
 let TAPES=[];
 
 function showPage(id,btn){
 
 document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+
 document.getElementById(id).classList.add("active");
 
-document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+
 btn.classList.add("active");
 
 }
 
 function parseCSV(text){
 
-let rows=text.split("\n").map(r=>r.split(","));
+const rows=text.trim().split("\n").map(r=>r.split(","));
 
-let headers=rows.shift();
+const headers=rows.shift();
 
 return rows.map(r=>{
-
 let o={};
-
 headers.forEach((h,i)=>o[h.trim()]=r[i]);
-
 return o;
-
 });
 
 }
 
-async function loadData(){
+async function load(){
 
-let res=await fetch(SHEET_URL);
+const res=await fetch(SHEET);
 
-let txt=await res.text();
+const csv=await res.text();
 
-let data=parseCSV(txt);
+const data=parseCSV(csv);
 
 TAPES=data.map((r,i)=>({
 
-ref:r.REF||i+1,
-artist:r.Artist||"",
-album:r.Album_Title||"",
-genre:r.Genre_Category||"",
-digitized:r.Digitized==="YES",
-youtube:r.YOUTUBE==="posted",
-instagram:r.INSTAGRAM==="posted"
+ref:r["REF"]||i+1,
+
+artist:r["Artist"]||"",
+
+album:r["Album_Title"]||"",
+
+genre:r["Genre_Category"]||"",
+
+digitized:(r["Digitized"]||"").toLowerCase()=="yes",
+
+youtube:(r["YOUTUBE"]||"").toLowerCase()=="posted",
+
+instagram:(r["INSTAGRAM"]||"").toLowerCase()=="posted"
 
 }));
 
-updateDashboard();
-
 renderCollection();
 
-doSearch();
+search();
 
-}
-
-function updateDashboard(){
-
-document.getElementById("total").innerText=TAPES.length;
-
-let dig=TAPES.filter(t=>t.digitized).length;
-
-document.getElementById("digitized").innerText=dig;
-
-let pub=TAPES.filter(t=>t.youtube||t.instagram).length;
-
-document.getElementById("published").innerText=pub;
+updateStats();
 
 }
 
@@ -409,57 +299,71 @@ function card(t){
 
 let tags="";
 
-tags+=t.digitized
-?'<span class="tag dig">Digitized</span>'
-:'<span class="tag not">Not digitized</span>';
+tags+=t.digitized?'<span class="tag dig">DIGITIZED</span>':'<span class="tag not">NOT DIGITIZED</span>';
 
-if(t.genre)
-tags+=`<span class="tag genre">${t.genre}</span>`;
+if(t.genre)tags+=`<span class="tag genre">${t.genre}</span>`;
 
-if(t.youtube)
-tags+='<span class="tag yt">YT</span>';
+if(t.youtube)tags+='<span class="tag yt">YOUTUBE</span>';
 
-if(t.instagram)
-tags+='<span class="tag ig">IG</span>';
+if(t.instagram)tags+='<span class="tag ig">INSTAGRAM</span>';
 
-return `
+return`
+
 <div class="card">
+
 <div class="ref">#${t.ref}</div>
 
 <div>
+
 <div class="artist">${t.artist}</div>
+
 <div class="album">${t.album}</div>
+
 <div class="tags">${tags}</div>
+
 </div>
 
 </div>
+
 `;
 
 }
 
-function doSearch(){
+function search(){
 
-let q=document.getElementById("q").value.toLowerCase();
+const q=document.getElementById("q").value.toLowerCase();
 
-let list=TAPES.filter(t=>
+const filtered=TAPES.filter(t=>
+
 t.artist.toLowerCase().includes(q)||
+
 t.album.toLowerCase().includes(q)||
+
 t.genre.toLowerCase().includes(q)
+
 );
 
-document.getElementById("results").innerHTML=
-list.map(card).join("");
+document.getElementById("results").innerHTML=filtered.map(card).join("");
 
 }
 
 function renderCollection(){
 
-document.getElementById("collection-list").innerHTML=
-TAPES.map(card).join("");
+document.getElementById("collectionlist").innerHTML=TAPES.map(card).join("");
 
 }
 
-loadData();
+function updateStats(){
+
+document.getElementById("total").innerText=TAPES.length;
+
+document.getElementById("digitized").innerText=TAPES.filter(t=>t.digitized).length;
+
+document.getElementById("published").innerText=TAPES.filter(t=>t.youtube||t.instagram).length;
+
+}
+
+load();
 
 </script>
 
