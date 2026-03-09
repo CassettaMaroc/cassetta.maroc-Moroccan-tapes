@@ -578,6 +578,106 @@ mark { background:rgba(34,197,94,.2); color:var(--acc); border-radius:2px; paddi
 }
 .cal-summary span b { color:var(--acc); font-weight:700; }
 
+/* ── ITUNES BUTTON ON TILE ── */
+.col-tile-itunes {
+  display:flex; align-items:center; justify-content:center;
+  gap:5px; margin-top:8px;
+  padding:5px 8px; border-radius:6px;
+  background:rgba(250,60,100,.08); border:1px solid rgba(250,60,100,.2);
+  color:#fc3c64; font-family:var(--fm); font-size:9px; letter-spacing:.8px;
+  text-transform:uppercase; cursor:pointer; transition:all .2s; width:100%;
+}
+.col-tile-itunes:hover { background:rgba(250,60,100,.18); border-color:rgba(250,60,100,.5); }
+.col-tile-itunes svg { flex-shrink:0; }
+
+/* ── ITUNES PLAYER MODAL ── */
+#itunes-modal {
+  position:fixed; inset:0; z-index:9000;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(8px);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+#itunes-modal.open { display:flex; }
+.itunes-box {
+  background:#111118; border:1px solid var(--bdr2);
+  border-radius:16px; width:100%; max-width:480px;
+  max-height:85vh; overflow:hidden; display:flex; flex-direction:column;
+  box-shadow:0 24px 80px rgba(0,0,0,.8);
+}
+.itunes-header {
+  padding:16px 20px; border-bottom:1px solid var(--bdr);
+  display:flex; align-items:center; gap:12px;
+}
+.itunes-logo {
+  width:32px; height:32px; border-radius:8px;
+  background:linear-gradient(135deg,#fc3c64,#ff6b35);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.itunes-header-info { flex:1; min-width:0; }
+.itunes-header-title { font-size:13px; font-weight:700; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.itunes-header-sub { font-family:var(--fm); font-size:10px; color:var(--mut); margin-top:2px; }
+.itunes-close {
+  width:28px; height:28px; border-radius:50%;
+  background:var(--s3); border:none; color:var(--mut);
+  cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all .2s;
+}
+.itunes-close:hover { background:var(--s4); color:var(--txt); }
+.itunes-body { flex:1; overflow-y:auto; padding:12px 16px; }
+.itunes-loading {
+  padding:40px 0; text-align:center;
+  font-family:var(--fm); font-size:11px; color:var(--mut);
+}
+.itunes-loading .spin-icon { font-size:24px; animation:spin 1s linear infinite; display:block; margin-bottom:8px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.itunes-none { padding:32px 0; text-align:center; font-family:var(--fm); font-size:11px; color:var(--mut); }
+.itunes-none .icon { font-size:28px; margin-bottom:8px; }
+.itunes-open-btn {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  margin:12px 16px 16px; padding:10px; border-radius:8px;
+  background:linear-gradient(135deg,rgba(252,60,100,.15),rgba(255,107,53,.1));
+  border:1px solid rgba(252,60,100,.3); color:#fc3c64;
+  font-family:var(--fm); font-size:10px; letter-spacing:.8px; text-transform:uppercase;
+  cursor:pointer; transition:all .2s; text-decoration:none;
+}
+.itunes-open-btn:hover { background:linear-gradient(135deg,rgba(252,60,100,.25),rgba(255,107,53,.2)); }
+.itunes-track {
+  display:flex; align-items:center; gap:10px;
+  padding:8px; border-radius:8px; cursor:pointer;
+  transition:background .15s; margin-bottom:2px;
+}
+.itunes-track:hover { background:var(--s2); }
+.itunes-track.playing { background:rgba(252,60,100,.08); }
+.itunes-track-art {
+  width:44px; height:44px; border-radius:6px; overflow:hidden; flex-shrink:0;
+  background:var(--s3);
+}
+.itunes-track-art img { width:100%; height:100%; object-fit:cover; pointer-events:none; }
+.itunes-track-info { flex:1; min-width:0; }
+.itunes-track-name { font-size:12px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.itunes-track-album { font-family:var(--fm); font-size:10px; color:var(--mut); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+.itunes-track-play {
+  width:32px; height:32px; border-radius:50%; flex-shrink:0;
+  background:rgba(252,60,100,.1); border:1px solid rgba(252,60,100,.3);
+  color:#fc3c64; display:flex; align-items:center; justify-content:center;
+  font-size:11px; transition:all .2s;
+}
+.itunes-track:hover .itunes-track-play { background:rgba(252,60,100,.2); }
+.itunes-track.playing .itunes-track-play { background:#fc3c64; color:#fff; border-color:#fc3c64; }
+.itunes-mini-player {
+  padding:12px 16px; border-top:1px solid var(--bdr);
+  display:none; align-items:center; gap:10px;
+  background:rgba(252,60,100,.05);
+}
+.itunes-mini-player.visible { display:flex; }
+.itunes-mini-info { flex:1; min-width:0; }
+.itunes-mini-name { font-size:11px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.itunes-mini-time { font-family:var(--fm); font-size:9px; color:var(--mut); margin-top:1px; }
+.itunes-mini-stop {
+  padding:5px 12px; border-radius:6px;
+  background:rgba(252,60,100,.1); border:1px solid rgba(252,60,100,.2);
+  color:#fc3c64; font-family:var(--fm); font-size:9px; cursor:pointer;
+}
+
 /* ── COLLECTION MODE TOGGLE ── */
 .col-mode-bar {
   display:flex; gap:8px; margin-bottom:24px;
@@ -964,6 +1064,36 @@ img { -webkit-user-drag:none; user-drag:none; pointer-events:none; }
 
 </div>
 
+<!-- ══ ITUNES PLAYER MODAL ══ -->
+<div id="itunes-modal">
+  <div class="itunes-box">
+    <div class="itunes-header">
+      <div class="itunes-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      </div>
+      <div class="itunes-header-info">
+        <div class="itunes-header-title" id="itunes-title">—</div>
+        <div class="itunes-header-sub" id="itunes-sub">Searching iTunes…</div>
+      </div>
+      <button class="itunes-close" onclick="closeITunes()">✕</button>
+    </div>
+    <div class="itunes-body" id="itunes-body">
+      <div class="itunes-loading"><span class="spin-icon">♪</span>Searching iTunes…</div>
+    </div>
+    <div class="itunes-mini-player" id="itunes-mini">
+      <div class="itunes-mini-info">
+        <div class="itunes-mini-name" id="itunes-mini-name">—</div>
+        <div class="itunes-mini-time" id="itunes-mini-time">30s preview</div>
+      </div>
+      <button class="itunes-mini-stop" onclick="stopPreview()">■ Stop</button>
+    </div>
+    <a class="itunes-open-btn" id="itunes-open-link" href="#" target="_blank" rel="noopener">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open in iTunes / Apple Music
+    </a>
+  </div>
+</div>
+
 <!-- ══ ADMIN LOGIN MODAL ══ -->
 <div id="admin-modal" style="display:none">
   <div class="modal-backdrop" onclick="closeAdminLogin()"></div>
@@ -1317,6 +1447,13 @@ function tapeCard(t, q='') {
     t.instagram  ? `<span class="tag tag-ig">IG</span>` : '',
     t.webarchive ? `<span class="tag tag-wa">Archive</span>` : '',
   ].filter(Boolean).join('');
+  const itA = (t.artist||'').replace(/'/g,"\\'");
+  const itB = (t.album||'').replace(/'/g,"\\'");
+  const itunesBtn = (t.artist||t.album) ? `
+    <button class="col-tile-itunes" onclick="event.stopPropagation();openITunes('${itA}','${itB}')" title="Listen on iTunes / Apple Music">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      iTunes
+    </button>` : '';
   return `
     <div class="tape-card">
       <div class="tape-num">#${t.ref}</div>
@@ -1324,6 +1461,7 @@ function tapeCard(t, q='') {
         <div class="tape-artist">${hi(esc(t.artist))}</div>
         <div class="tape-album">${hi(esc(t.album||'—'))}</div>
         <div class="tape-tags">${tags}</div>
+        ${itunesBtn}
       </div>
     </div>`;
 }
@@ -1571,20 +1709,136 @@ function colTile(t) {
        <div class="col-art-placeholder" style="display:none"><span class="art-initials">${initials}</span><span class="art-ref">#${t.ref}</span></div>`
     : `<div class="col-art-placeholder"><span class="art-initials">${initials}</span><span class="art-ref">#${t.ref}</span></div>`;
 
+  const itunesQuery = encodeURIComponent(`${t.artist||''} ${t.album||''}`.trim());
+  const itunesBtn = (t.artist || t.album) ? `
+    <button class="col-tile-itunes" onclick="event.stopPropagation();openITunes('${(t.artist||'').replace(/'/g,"\\'")}','${(t.album||'').replace(/'/g,"\\'")}')">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      iTunes
+    </button>` : '';
+
   return `
     <div class="col-tile">
       <div class="col-art">${artInner}<div class="col-art-status" style="background:${statusColor}"></div></div>
       <div class="col-tile-info">
         <div class="col-tile-title" title="${esc(t.album||'—')}">${esc(t.album||'—')}</div>
-        <div class="col-tile-sub">${esc(t.label||'')}</div>
+        <div class="col-tile-sub">${esc(t.artist||'')}${t.label ? ' · '+esc(t.label) : ''}</div>
         <div class="col-tile-tags">${tags}</div>
+        ${itunesBtn}
       </div>
     </div>`;
 }
 
 // ═══════════════════════════════════════════════
-// DASHBOARD
+// ITUNES SEARCH + PREVIEW
 // ═══════════════════════════════════════════════
+let _itunesAudio = null;
+let _currentTrackEl = null;
+
+async function openITunes(artist, album) {
+  const modal = document.getElementById('itunes-modal');
+  modal.classList.add('open');
+  document.getElementById('itunes-title').textContent = album || artist;
+  document.getElementById('itunes-sub').textContent = artist || '';
+  document.getElementById('itunes-body').innerHTML = `<div class="itunes-loading"><span class="spin-icon">♪</span>Searching iTunes…</div>`;
+  document.getElementById('itunes-mini').classList.remove('visible');
+
+  // Build iTunes search URL — try album + artist first
+  const q = encodeURIComponent(`${artist} ${album}`.trim());
+  const url = `https://itunes.apple.com/search?term=${q}&media=music&entity=song&limit=10&country=MA`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    renderITunesResults(data.results || [], artist, album);
+  } catch(e) {
+    document.getElementById('itunes-body').innerHTML =
+      `<div class="itunes-none"><div class="icon">⚠️</div>Could not reach iTunes.<br>Check your connection.</div>`;
+  }
+}
+
+function renderITunesResults(tracks, artist, album) {
+  const body = document.getElementById('itunes-body');
+  const link = document.getElementById('itunes-open-link');
+
+  // Set open-in-iTunes link
+  const searchUrl = `https://music.apple.com/search?term=${encodeURIComponent(artist+' '+album)}`;
+  link.href = searchUrl;
+
+  if (!tracks.length) {
+    // Try artist-only fallback
+    body.innerHTML = `<div class="itunes-none"><div class="icon">🎵</div>No results found for this tape.<br><span style="color:var(--mut);font-size:9px">Try opening in Apple Music directly.</span></div>`;
+    return;
+  }
+
+  document.getElementById('itunes-sub').textContent = `${tracks.length} tracks found`;
+
+  body.innerHTML = tracks.map((tr, i) => {
+    const art = (tr.artworkUrl60 || '').replace('60x60', '100x100');
+    const hasPreview = !!tr.previewUrl;
+    return `
+      <div class="itunes-track" id="itrack-${i}" onclick="playPreview('${(tr.previewUrl||'').replace(/'/g,"\\'")}', '${(tr.trackName||'').replace(/'/g,"\\'")}', ${i})">
+        <div class="itunes-track-art">${art ? `<img src="${art}" alt="">` : '🎵'}</div>
+        <div class="itunes-track-info">
+          <div class="itunes-track-name">${esc(tr.trackName||'Unknown')}</div>
+          <div class="itunes-track-album">${esc(tr.collectionName||'')} · ${esc(tr.artistName||'')}</div>
+        </div>
+        <div class="itunes-track-play">${hasPreview ? '▶' : '🔗'}</div>
+      </div>`;
+  }).join('');
+}
+
+function playPreview(previewUrl, trackName, idx) {
+  // If no preview, do nothing (open iTunes link instead)
+  if (!previewUrl) return;
+
+  // Stop current
+  if (_itunesAudio) { _itunesAudio.pause(); _itunesAudio = null; }
+  if (_currentTrackEl) _currentTrackEl.classList.remove('playing');
+
+  const el = document.getElementById(`itrack-${idx}`);
+
+  // If same track clicked again — stop
+  if (_currentTrackEl === el) {
+    _currentTrackEl = null;
+    document.getElementById('itunes-mini').classList.remove('visible');
+    return;
+  }
+
+  _itunesAudio = new Audio(previewUrl);
+  _itunesAudio.play();
+  _currentTrackEl = el;
+  el.classList.add('playing');
+
+  // Mini player
+  const mini = document.getElementById('itunes-mini');
+  document.getElementById('itunes-mini-name').textContent = trackName;
+  mini.classList.add('visible');
+
+  // Auto stop at end
+  _itunesAudio.addEventListener('ended', () => {
+    el.classList.remove('playing');
+    mini.classList.remove('visible');
+    _itunesAudio = null; _currentTrackEl = null;
+  });
+}
+
+function stopPreview() {
+  if (_itunesAudio) { _itunesAudio.pause(); _itunesAudio = null; }
+  if (_currentTrackEl) { _currentTrackEl.classList.remove('playing'); _currentTrackEl = null; }
+  document.getElementById('itunes-mini').classList.remove('visible');
+}
+
+function closeITunes() {
+  stopPreview();
+  document.getElementById('itunes-modal').classList.remove('open');
+}
+
+// Close on backdrop click
+document.getElementById('itunes-modal')?.addEventListener('click', function(e) {
+  if (e.target === this) closeITunes();
+});
+
+
 const COLS=['#22c55e','#60a5fa','#a78bfa','#22d3ee','#fb923c','#f472b6','#facc15','#34d399','#818cf8','#f87171','#4ade80','#38bdf8'];
 
 function renderDashboard() {
