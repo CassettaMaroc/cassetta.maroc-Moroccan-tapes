@@ -2702,7 +2702,13 @@ async function loadAdminTapes() {
     _labelOptions  = [...new Set(rows.map(r=>r['Label / Notes']).filter(Boolean))].sort();
     _genreOptions  = [...new Set(rows.flatMap(r=>(r['Genre / Category']||'').split(/,\s*/)).filter(Boolean))].sort();
     renderAdminTable();
-    setAdminStatus('ok','✅ '+rows.length+' tapes loaded');
+    const headers = Object.keys(rows[0]).filter(k=>k!=='row_number');
+    const hasRealData = headers.includes('Artist') || headers.includes('REF');
+    if (!hasRealData) {
+      setAdminStatus('err', '⚠ SheetDB is reading wrong row as headers. Columns found: ' + headers.slice(0,6).join(', ') + ' — Fix: delete row 1 in your Google Sheet (the "digitalised tape" title row), so your real headers become row 1.');
+    } else {
+      setAdminStatus('ok','✅ '+rows.length+' tapes loaded · '+headers.length+' columns detected');
+    }
   } catch(e) { setAdminStatus('err','❌ '+e.message); }
 }
 
@@ -2737,6 +2743,16 @@ function openAdminForm(ref) {
   _editingRef = ref||null;
   const t = ref ? (_adminTapes.find(x=>String(x['REF'])===String(ref))||{}) : {};
   const isNew = !ref;
+
+  // Flexible field getter — handles column name case/spacing variations
+  const fget = (tape, ...names) => {
+    for (const n of names) {
+      if (tape[n] !== undefined) return tape[n] || '';
+      const key = Object.keys(tape).find(k => k.toLowerCase().replace(/\s+/g,'') === n.toLowerCase().replace(/\s+/g,''));
+      if (key && tape[key] !== undefined) return tape[key] || '';
+    }
+    return '';
+  };
   document.getElementById('admin-form-title').textContent = isNew ? '➕ Add New Tape' : '✏️ Edit Tape #'+ref;
   document.getElementById('admin-delete-btn').style.display = isNew?'none':'';
   document.getElementById('admin-form-modal').classList.add('open');
@@ -2760,7 +2776,7 @@ function openAdminForm(ref) {
       <div class="af-field af-full">
         <label>Artist</label>
         <div class="af-combo">
-          <input id="af_artist" list="dl_artist" value="${esc(t['Artist']||'')}" placeholder="Type or select…"/>
+          <input id="af_artist" list="dl_artist" value="${esc(fget(t,'Artist'))}" placeholder="Type or select…"/>
           <datalist id="dl_artist">${_artistOptions.map(a=>`<option value="${esc(a)}">`).join('')}</datalist>
           <button class="af-add" onclick="afAddNew('af_artist','dl_artist','_artistOptions')">+ New</button>
         </div>
@@ -2768,13 +2784,13 @@ function openAdminForm(ref) {
 
       <div class="af-field af-full">
         <label>Album / Title</label>
-        <input id="af_album" type="text" value="${esc(t['Album / Title']||'')}" placeholder="Album or tape title…"/>
+        <input id="af_album" type="text" value="${esc(fget(t,'Album / Title','Album','Title'))}" placeholder="Album or tape title…"/>
       </div>
 
       <div class="af-field af-full">
         <label>Genre / Category <span style="font-weight:400;color:var(--mut)">(comma-separated)</span></label>
         <div class="af-combo">
-          <input id="af_genre" list="dl_genre" value="${esc(t['Genre / Category']||'')}" placeholder="e.g. Pop, Rock, Amazigh Fusion"/>
+          <input id="af_genre" list="dl_genre" value="${esc(fget(t,'Genre / Category','Genre','Category'))}" placeholder="e.g. Pop, Rock, Amazigh Fusion"/>
           <datalist id="dl_genre">${_genreOptions.map(g=>`<option value="${esc(g)}">`).join('')}</datalist>
           <button class="af-add" onclick="afAddNew('af_genre','dl_genre','_genreOptions')">+ New</button>
         </div>
@@ -2783,7 +2799,7 @@ function openAdminForm(ref) {
       <div class="af-field af-full">
         <label>Label / Notes</label>
         <div class="af-combo">
-          <input id="af_label" list="dl_label" value="${esc(t['Label / Notes']||'')}" placeholder="Label name…"/>
+          <input id="af_label" list="dl_label" value="${esc(fget(t,'Label / Notes','Label','Notes'))}" placeholder="Label name…"/>
           <datalist id="dl_label">${_labelOptions.map(l=>`<option value="${esc(l)}">`).join('')}</datalist>
           <button class="af-add" onclick="afAddNew('af_label','dl_label','_labelOptions')">+ New</button>
         </div>
@@ -2794,30 +2810,24 @@ function openAdminForm(ref) {
 
   <div class="af-section"><div class="af-section-title">✅ Status</div>
     <div class="af-status-grid">
-      <div class="af-field"><label>COVER SCAN</label>${yn('af_coverscan', t['COVER SCAN'])}</div>
-      <div class="af-field"><label>Digitized</label>${yn('af_digitized', t['Digitized'])}</div>
-      <div class="af-field"><label>YOUTUBE</label>${np('af_youtube_s', t['YOUTUBE'])}</div>
-      <div class="af-field"><label>INSTAGRAM</label>${np('af_instagram_s', t['INSTAGRAM'])}</div>
-      <div class="af-field"><label>WEBARCHIVE</label>${np('af_webarchive_s', t['WEBARCHIVE'])}</div>
+      <div class="af-field"><label>COVER SCAN</label>${yn('af_coverscan', fget(t,'COVER SCAN','CoverScan'))}</div>
+      <div class="af-field"><label>Digitized</label>${yn('af_digitized', fget(t,'Digitized'))}</div>
+      <div class="af-field"><label>YOUTUBE</label>${np('af_youtube_s', fget(t,'YOUTUBE','Youtube'))}</div>
+      <div class="af-field"><label>INSTAGRAM</label>${np('af_instagram_s', fget(t,'INSTAGRAM','Instagram'))}</div>
+      <div class="af-field"><label>WEBARCHIVE</label>${np('af_webarchive_s', fget(t,'WEBARCHIVE','WebArchive'))}</div>
     </div>
   </div>
 
   <div class="af-section"><div class="af-section-title">🔗 Links & Media</div>
     <div class="af-grid">
       <div class="af-field af-full"><label>ART Work URL</label>
-        <input id="af_artwork" type="text" value="${esc(t['ART Work']||'')}" placeholder="https://raw.githubusercontent.com/…"/>
-      </div>
-      <div class="af-field af-full"><label>YOUTUBE URL</label>
-        <input id="af_youtube_url" type="text" value="${esc(t['YOUTUBE']||'')}" placeholder="https://youtube.com/…"/>
-      </div>
-      <div class="af-field af-full"><label>INSTAGRAM URL</label>
-        <input id="af_instagram_url" type="text" value="${esc(t['INSTAGRAM']||'')}" placeholder="https://instagram.com/…"/>
+        <input id="af_artwork" type="text" value="${esc(fget(t,'ART Work','ArtWork','artwork'))}" placeholder="https://raw.githubusercontent.com/…"/>
       </div>
       <div class="af-field af-full"><label>WEBARCHIVE URL</label>
-        <input id="af_webarchive_url" type="text" value="${esc(t['WEBARCHIVE']||'')}" placeholder="https://archive.org/details/…"/>
+        <input id="af_webarchive_url" type="text" value="${esc(fget(t,'WEBARCHIVE','WebArchive'))}" placeholder="https://archive.org/details/…"/>
       </div>
       <div class="af-field af-full"><label>Music (Archive.org)</label>
-        <input id="af_music" type="text" value="${esc(t['music']||t['Music']||'')}" placeholder="https://archive.org/details/…"/>
+        <input id="af_music" type="text" value="${esc(fget(t,'music','Music'))}" placeholder="https://archive.org/details/…"/>
       </div>
     </div>
   </div>`;
