@@ -863,6 +863,19 @@ mark { background:rgba(34,197,94,.2); color:var(--acc); border-radius:2px; paddi
 .af-tog:hover  { border-color:var(--txt2); color:var(--txt); }
 .af-status-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; }
 
+.number-bar {
+  display:flex; flex-wrap:wrap; gap:6px;
+  margin-bottom:16px; margin-top:6px;
+}
+.number-btn {
+  padding:5px 12px; border-radius:8px; border:1px solid var(--bdr2);
+  background:var(--s2); color:var(--txt2); font-family:var(--fm);
+  font-size:10px; letter-spacing:.6px; cursor:pointer; transition:all .15s;
+}
+.number-btn:hover { border-color:var(--bdr); color:var(--txt); }
+.number-btn.active { background:var(--accd); border-color:var(--acc); color:var(--acc); }
+.number-btn.all { background:transparent; }
+
 /* ── COLLECTION MODE TOGGLE ── */
 .col-mode-bar {
   display:flex; gap:8px; margin-bottom:24px;
@@ -926,14 +939,42 @@ mark { background:rgba(34,197,94,.2); color:var(--acc); border-radius:2px; paddi
 
 /* ── IMAGE PROTECTION ── */
 img { -webkit-user-drag:none; user-drag:none; pointer-events:none; }
+@media(max-width:768px) {
+  .page { padding:20px 14px 100px }
+  .col-grid { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px }
+  .artist-grid { grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px }
+  .tape-card { flex-direction:column; gap:8px }
+  .admin-wrap { padding:12px }
+  .admin-toolbar { flex-direction:column; align-items:stretch }
+  .admin-toolbar-right { justify-content:flex-end }
+  .admin-search { width:100% }
+  .admin-table-wrap { font-size:11px }
+  .admin-table td, .admin-table th { padding:8px 8px }
+  .af-grid { grid-template-columns:1fr }
+  .af-full { grid-column:1 }
+  .af-status-grid { grid-template-columns:1fr 1fr }
+  .admin-form-body { padding:14px }
+  #admin-form-modal .admin-form-box { max-height:95vh }
+  .mp-box { border-radius:14px }
+}
 @media(max-width:600px) {
-  .nav { padding:0 10px; gap:6px }
-  .nav-center { font-size:13px }
-  .tab { padding:0 9px; font-size:9px }
-  .page { padding:20px 16px 100px }
-  .col-grid,.artist-grid { grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px }
+  .nav { padding:0 10px; gap:4px }
+  .nav-center { gap:2px }
+  .tab { padding:0 7px; font-size:9px; letter-spacing:.4px }
+  .page { padding:16px 12px 100px }
+  .col-grid,.artist-grid { grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px }
   .fp-grid { grid-template-columns:1fr 1fr }
-  .search-hero h1 { font-size:32px }
+  .search-hero h1 { font-size:28px }
+  .search-hero h1 span.hl { font-size:28px }
+  .search-box input { font-size:15px; padding:14px 16px }
+  .col-tile { min-width:0 }
+  .col-tile-info { padding:8px 10px }
+  .letter-bar { gap:3px }
+  .letter-btn { min-width:22px; height:26px; font-size:9px }
+  .number-bar { gap:4px; flex-wrap:wrap }
+  .label-bar { gap:4px; flex-wrap:wrap }
+  .kpi-grid { grid-template-columns:1fr 1fr }
+  .sec-title { font-size:10px }
 }
 
 /* ── LOGIN WALL ── */
@@ -1268,10 +1309,11 @@ img { -webkit-user-drag:none; user-drag:none; pointer-events:none; }
   <!-- ── ARTIST MODE ── -->
   <div id="col-mode-artist">
     <div id="col-artists-view">
-      <div style="display:flex;align-items:center;margin-bottom:16px">
+      <div style="display:flex;align-items:center;margin-bottom:12px">
         <div class="sec-title" style="margin:0;flex:1">Artists <span class="col-count-badge" id="col-count"></span></div>
       </div>
       <div class="letter-bar" id="letter-bar"></div>
+      <div class="number-bar" id="number-bar"></div>
       <div class="artist-grid" id="col-artists-list"></div>
     </div>
     <div id="col-detail-view" style="display:none">
@@ -1290,9 +1332,10 @@ img { -webkit-user-drag:none; user-drag:none; pointer-events:none; }
   <div id="col-mode-label" style="display:none">
     <!-- Label list -->
     <div id="col-label-list-view">
-      <div style="display:flex;align-items:center;margin-bottom:16px">
+      <div style="display:flex;align-items:center;margin-bottom:12px">
         <div class="sec-title" style="margin:0;flex:1">Labels <span class="col-count-badge" id="col-label-count"></span></div>
       </div>
+      <div class="letter-bar" id="label-bar"></div>
       <div class="label-grid" id="col-label-list"></div>
     </div>
     <!-- Label → tapes view (direct, no artist step) -->
@@ -1795,6 +1838,8 @@ function clearAllFilters() {
 // COLLECTION — ARTIST GRID + ALBUM GRID
 // ═══════════════════════════════════════════════
 let _activeLetter = 'ALL';
+let _activeRange  = 'ALL';  // REF number range filter
+let _activeLabelLetter = 'ALL';  // Label letter filter
 
 function renderCollection() {
   const map = {};
@@ -1816,6 +1861,47 @@ function renderCollection() {
       ? `<button class="letter-btn ${_activeLetter==='#'?'active':''}" onclick="filterByLetter('#')">#</button>`
       : '');
 
+  // Build REF number ranges
+  buildNumberBar();
+  renderArtistGrid(map, artists);
+}
+
+// ── REF number range filter ───────────────────────────────────────
+function buildNumberBar() {
+  const refs = ALL_TAPES.map(t => parseInt(t.ref)||0).filter(Boolean);
+  if (!refs.length) return;
+  const maxRef = Math.max(...refs);
+
+  // Build ranges: 1-50, 51-100, etc. in steps of 50
+  const step = 50;
+  const ranges = [];
+  for (let i = 1; i <= maxRef; i += step) {
+    const end = Math.min(i + step - 1, maxRef);
+    // Only add range if tapes exist in it
+    const count = refs.filter(r => r >= i && r <= end).length;
+    if (count > 0) ranges.push({ from: i, to: end, label: `${i}–${end}`, count });
+  }
+
+  const bar = document.getElementById('number-bar');
+  if (!bar) return;
+  bar.innerHTML =
+    `<button class="number-btn all ${_activeRange==='ALL'?'active':''}" onclick="filterByRange('ALL')">ALL</button>` +
+    ranges.map(r =>
+      `<button class="number-btn ${_activeRange===r.label?'active':''}" onclick="filterByRange('${r.label}',${r.from},${r.to})">${r.label}</button>`
+    ).join('');
+}
+
+function filterByRange(label, from, to) {
+  _activeRange = label;
+  document.querySelectorAll('.number-btn').forEach(b =>
+    b.classList.toggle('active', b.textContent.trim() === label)
+  );
+  const map = {};
+  const tapes = label === 'ALL'
+    ? ALL_TAPES
+    : ALL_TAPES.filter(t => { const r = parseInt(t.ref)||0; return r >= from && r <= to; });
+  tapes.forEach(t => { const a=t.artist||'Unknown'; if(!map[a]) map[a]=[]; map[a].push(t); });
+  const artists = Object.keys(map).sort((a,b) => a.localeCompare(b));
   renderArtistGrid(map, artists);
 }
 
@@ -1894,17 +1980,61 @@ function switchColMode(mode) {
 // LABEL MODE
 // ═══════════════════════════════════════════════
 function renderLabels() {
-  // Build label → tapes map
   const lmap = {};
   ALL_TAPES.forEach(t => {
     const l = (t.label||'').trim() || 'Unknown';
     if (!lmap[l]) lmap[l] = [];
     lmap[l].push(t);
   });
-  const labels = Object.keys(lmap).sort((a,b) => a.localeCompare(b));
-  document.getElementById('col-label-count').textContent = labels.length + ' labels · ' + ALL_TAPES.length + ' tapes';
+  const allLabels = Object.keys(lmap).sort((a,b) => a.localeCompare(b));
+  document.getElementById('col-label-count').textContent = allLabels.length + ' labels · ' + ALL_TAPES.length + ' tapes';
 
-  document.getElementById('col-label-list').innerHTML = labels.map(name => {
+  // Build label letter bar
+  const usedLetters = new Set(allLabels.map(n => n[0]?.toUpperCase()).filter(Boolean));
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const labelBar = document.getElementById('label-bar');
+  if (labelBar) {
+    labelBar.innerHTML =
+      `<button class="letter-btn all ${_activeLabelLetter==='ALL'?'active':''}" onclick="filterLabelByLetter('ALL')">ALL</button>` +
+      letters.map(l =>
+        `<button class="letter-btn ${usedLetters.has(l)?'':'empty'} ${_activeLabelLetter===l?'active':''}"
+          onclick="filterLabelByLetter('${l}')">${l}</button>`
+      ).join('') +
+      (allLabels.some(n => /^[^a-zA-Z]/.test(n))
+        ? `<button class="letter-btn ${_activeLabelLetter==='#'?'active':''}" onclick="filterLabelByLetter('#')">#</button>`
+        : '');
+  }
+
+  renderLabelGrid(lmap, allLabels);
+  document.getElementById('col-label-list-view').style.display = '';
+  document.getElementById('col-label-artists-view').style.display = 'none';
+}
+
+function filterLabelByLetter(letter) {
+  _activeLabelLetter = letter;
+  document.querySelectorAll('#label-bar .letter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === letter || (letter==='ALL' && b.textContent.trim()==='ALL'));
+  });
+  const lmap = {};
+  ALL_TAPES.forEach(t => { const l=(t.label||'').trim()||'Unknown'; if(!lmap[l]) lmap[l]=[]; lmap[l].push(t); });
+  const allLabels = Object.keys(lmap).sort((a,b) => a.localeCompare(b));
+  renderLabelGrid(lmap, allLabels);
+}
+
+function renderLabelGrid(lmap, allLabels) {
+  const filtered = _activeLabelLetter === 'ALL'
+    ? allLabels
+    : _activeLabelLetter === '#'
+      ? allLabels.filter(n => /^[^a-zA-Z]/.test(n))
+      : allLabels.filter(n => n[0]?.toUpperCase() === _activeLabelLetter);
+
+  if (!filtered.length) {
+    document.getElementById('col-label-list').innerHTML =
+      `<div class="no-results"><div class="icon">🏷</div><p>No labels starting with <strong>${_activeLabelLetter}</strong></p></div>`;
+    return;
+  }
+
+  document.getElementById('col-label-list').innerHTML = filtered.map(name => {
     const tapes = lmap[name];
     const artists = [...new Set(tapes.map(t=>t.artist).filter(Boolean))];
     const digCount = tapes.filter(t=>t.digitized).length;
@@ -1921,9 +2051,6 @@ function renderLabels() {
         </div>
       </div>`;
   }).join('');
-
-  document.getElementById('col-label-list-view').style.display = '';
-  document.getElementById('col-label-artists-view').style.display = 'none';
 }
 
 function showLabel(labelName) {
