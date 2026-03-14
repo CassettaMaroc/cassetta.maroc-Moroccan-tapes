@@ -3010,22 +3010,20 @@ async function saveTape() {
   const r = name => { const e = document.querySelector(`input[name="${name}"]:checked`); return e ? e.value : 'not'; };
 
   const data = {
+    'ART Work':         g('af_artwork'),
+    'COVER SCAN':       r('af_coverscan'),
     'Artist':           g('af_artist'),
     'Album / Title':    g('af_album'),
     'Genre / Category': g('af_genre'),
     'Label / Notes':    g('af_label'),
-    'COVER SCAN':       r('af_coverscan'),
-    'Digitized':        r('af_digitized'),
     'YOUTUBE':          r('af_youtube_s'),
     'INSTAGRAM':        r('af_instagram_s'),
     'WEBARCHIVE':       g('af_webarchive_url') ? 'posted' : r('af_webarchive_s'),
-    'ART Work':         g('af_artwork'),
+    'Digitized':        r('af_digitized'),
     'music':            g('af_music') || g('af_webarchive_url'),
   };
 
-  // Deduplicate — keep last value for each key
-  const clean = {};
-  Object.keys(data).forEach(k => clean[k] = data[k]);
+  const clean = { ...data };
 
   const isNew = !_editingRef;
   if (!clean['Artist'] && !clean['Album / Title']) {
