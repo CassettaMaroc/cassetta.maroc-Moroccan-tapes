@@ -25,29 +25,34 @@ body{background:#fff;color:#1a1a1a;font-family:Arial,sans-serif;font-size:14px;l
 nav#masthead{
   position:sticky;top:0;z-index:200;
   background:#fff;border-bottom:1px solid #e5e5e5;
-  display:flex;align-items:center;justify-content:center;
-  height:52px;padding:0 20px;gap:0;
+  display:flex;align-items:center;
+  height:52px;padding:0 12px;gap:0;
   box-shadow:0 1px 3px rgba(0,0,0,.06);
 }
 nav#masthead.hidden{display:none}
 .nav-logo{
-  position:absolute;left:20px;
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:7px;
+  flex-shrink:0;margin-right:4px;
 }
-.nav-logo img{width:28px;height:28px;border-radius:6px}
-.nav-logo-name{font-size:14px;font-weight:700;color:#1a1a1a;letter-spacing:-.2px}
-.nav-tabs{display:flex;gap:0}
+.nav-logo img{width:26px;height:26px;border-radius:6px}
+.nav-logo-name{font-size:13px;font-weight:700;color:#1a1a1a;letter-spacing:-.2px;white-space:nowrap}
+.nav-tabs{
+  display:flex;gap:0;flex:1;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.nav-tabs::-webkit-scrollbar{display:none}
 .tab{
-  height:52px;padding:0 16px;display:flex;align-items:center;gap:6px;
+  height:52px;padding:0 12px;display:flex;align-items:center;gap:5px;
   font-size:13px;font-weight:600;color:#666;cursor:pointer;
   border:none;background:none;border-bottom:2.5px solid transparent;
-  transition:all .15s;position:relative;top:1px;white-space:nowrap;
+  transition:all .15s;position:relative;top:1px;white-space:nowrap;flex-shrink:0;
 }
 .tab:hover{color:#1a1a1a}
 .tab.active{color:#c2410c;border-bottom-color:#c2410c}
 .nav-right{
-  position:absolute;right:20px;
-  display:flex;align-items:center;gap:8px;
+  display:flex;align-items:center;gap:6px;
+  flex-shrink:0;margin-left:4px;
 }
 .nav-sync-btn{
   display:flex;align-items:center;gap:5px;padding:5px 12px;
@@ -537,7 +542,7 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 @media(max-width:480px){
   /* Nav — icon only */
   .tab{padding:0 8px;font-size:12px;gap:3px}
-  .nav-sync-btn span{display:none}
+  .nav-sync-btn .sync-text{display:none}
 
   /* Search */
   .search-hero{padding:22px 0 12px}
@@ -594,7 +599,7 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
     </button>
     <button class="nav-sync-btn" id="sync-btn" onclick="loadData()">
       <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.5 2.5A7 7 0 1 0 15 8"/><polyline points="11 1 15 1 15 5"/></svg>
-      Sync
+      <span class="sync-text">Sync</span>
     </button>
   </div>
 </nav>
