@@ -413,7 +413,7 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 .af-tog{flex:1;text-align:center;padding:7px 4px;border:1px solid #e0e0e0;border-radius:6px;cursor:pointer;font-family:Arial,sans-serif;font-size:12px;font-weight:700;color:#888;transition:all .12s;user-select:none}
 .af-tog input{display:none}
 .af-tog.yes{border-color:#4ade80;background:#f0fdf4;color:#15803d}
-.af-tog.no{border-color:#e0e0e0;background:#fafafa;color:#aaa}
+.af-tog.no{border-color:#fca5a5;background:#fef2f2;color:#dc2626;font-weight:700}
 .af-tog.posted{border-color:#93c5fd;background:#eff6ff;color:#1d4ed8}
 .af-tog:hover{border-color:#ccc;color:#1a1a1a}
 .af-status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:7px}
@@ -1480,11 +1480,9 @@ function colTile(t) {
   const safe_a = (t.artist||'').replace(/'/g,"\\'");
   const safe_b = (t.album||'—').replace(/'/g,"\\'");
   const safe_art = (artUrl||'').replace(/'/g,"\\'");
-  const playBtn = t.music
-    ? `<button class="tile-play" onclick="event.stopPropagation();openPlayer('${safe_m}','${safe_a}','${safe_b}','${safe_art}')">▶</button>`
-    : '';
+  const playBtn = '';
   return `
-    <div class="col-tile" onclick="openPlayer('${safe_m}','${safe_a}','${safe_b}','${safe_art}')">
+    <div class="col-tile">
       <div class="col-tile-img">
         ${artUrl
           ? `<img src="${esc(artUrl)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
