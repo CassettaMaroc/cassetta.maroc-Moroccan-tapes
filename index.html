@@ -103,7 +103,7 @@ nav#masthead.hidden{display:none}
 /* ── ARTIST / LABEL GRID ── */
 .artist-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  grid-template-columns:repeat(4,1fr);
   gap:0;
 }
 .artist-card{
@@ -141,7 +141,7 @@ nav#masthead.hidden{display:none}
 /* ── TAPE GRID ── */
 .col-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  grid-template-columns:repeat(4,1fr);
   gap:0;
 }
 .col-tile{cursor:pointer;animation:fadeUp .2s ease;}
@@ -474,7 +474,7 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 @media(max-width:768px){
   .nav-logo-name{display:none}
   .page-wrap{padding:18px 14px 80px}
-  .artist-grid,.col-grid,#results{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+  .artist-grid,.col-grid{grid-template-columns:repeat(2,1fr);gap:0}#results{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
   .kpi-grid{grid-template-columns:1fr 1fr;gap:8px}
   .dash-two-col{grid-template-columns:1fr}
   .admin-toolbar{flex-direction:column;align-items:stretch}
