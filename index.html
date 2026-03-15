@@ -337,11 +337,17 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 .cal-legend-cell{width:11px;height:11px;border-radius:2px}
 .cal-scroll-wrap{overflow-x:auto;padding-bottom:4px}
 .cal-months-row{display:flex;gap:0;margin-bottom:5px;font-size:10px;font-weight:600;color:#aaa;min-width:600px}
-.cal-grid{display:grid;grid-template-columns:repeat(53,1fr);gap:2px;min-width:600px}
-.cal-cell{aspect-ratio:1;border-radius:2px;background:#f0f0f0;cursor:pointer}
-.cal-cell:hover{transform:scale(1.3);z-index:1;position:relative}
-.cal-cell.l1{background:#bbf7d0}.cal-cell.l2{background:#4ade80}.cal-cell.l3{background:#16a34a}.cal-cell.l4{background:#14532d}
-.cal-tooltip{position:fixed;z-index:9999;padding:5px 10px;border-radius:5px;background:#1a1a1a;color:#fff;font-size:11px;font-weight:600;pointer-events:none;white-space:nowrap}
+/* Week-based grid (used by JS) */
+#cal-grid{display:flex;gap:2px;min-width:fit-content}
+.cal-week{display:flex;flex-direction:column;gap:2px}
+.cal-day{width:12px;height:12px;border-radius:2px;cursor:pointer;flex-shrink:0}
+.cal-day:hover{transform:scale(1.3);z-index:1;position:relative}
+.cal-day-label{width:12px;height:12px;font-size:7px;color:#aaa;display:flex;align-items:center;justify-content:center}
+.cal-months-cell{width:12px;font-size:8px;color:#aaa;white-space:nowrap;overflow:visible;text-align:left}
+#cal-months{display:flex;gap:2px;margin-bottom:3px;min-width:fit-content}
+/* Legacy cell classes (fallback) */
+.cal-cell{width:12px;height:12px;border-radius:2px;background:#f0f0f0;cursor:pointer}
+.cal-tooltip{position:fixed;z-index:9999;padding:5px 10px;border-radius:5px;background:#1a1a1a;color:#fff;font-size:11px;font-weight:600;pointer-events:none;white-space:nowrap;display:none}
 .cal-summary{font-size:11px;color:#aaa;margin-top:8px;font-weight:600}
 .cal-debug{display:none}
 .donut-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
