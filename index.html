@@ -336,17 +336,17 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 .cal-legend-wrap{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#aaa}
 .cal-legend-cell{width:11px;height:11px;border-radius:2px}
 .cal-scroll-wrap{overflow-x:auto;padding-bottom:4px}
-.cal-months-row{display:flex;gap:0;margin-bottom:5px;font-size:10px;font-weight:600;color:#aaa;min-width:600px}
-/* Week-based grid (used by JS) */
+/* Month label row */
+#cal-months{display:flex;gap:2px;margin-bottom:4px;min-width:fit-content}
+.cal-ml{flex-shrink:0;width:13px;font-size:9px;font-weight:700;color:#aaa;text-align:left;white-space:nowrap;overflow:visible}
+/* Main grid: flex row of columns */
 #cal-grid{display:flex;gap:2px;min-width:fit-content}
-.cal-week{display:flex;flex-direction:column;gap:2px}
-.cal-day{width:12px;height:12px;border-radius:2px;cursor:pointer;flex-shrink:0}
-.cal-day:hover{transform:scale(1.3);z-index:1;position:relative}
-.cal-day-label{width:12px;height:12px;font-size:7px;color:#aaa;display:flex;align-items:center;justify-content:center}
-.cal-months-cell{width:12px;font-size:8px;color:#aaa;white-space:nowrap;overflow:visible;text-align:left}
-#cal-months{display:flex;gap:2px;margin-bottom:3px;min-width:fit-content}
-/* Legacy cell classes (fallback) */
-.cal-cell{width:12px;height:12px;border-radius:2px;background:#f0f0f0;cursor:pointer}
+.cal-col{display:flex;flex-direction:column;gap:2px}
+/* Day label cells */
+.cal-dl{width:13px;height:13px;font-size:8px;font-weight:700;color:#bbb;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Data cells */
+.cal-cell{width:13px;height:13px;border-radius:2px;cursor:pointer;flex-shrink:0;transition:transform .1s}
+.cal-cell:hover{transform:scale(1.4);z-index:2;position:relative}
 .cal-tooltip{position:fixed;z-index:9999;padding:5px 10px;border-radius:5px;background:#1a1a1a;color:#fff;font-size:11px;font-weight:600;pointer-events:none;white-space:nowrap;display:none}
 .cal-summary{font-size:11px;color:#aaa;margin-top:8px;font-weight:600}
 .cal-debug{display:none}
@@ -1794,30 +1794,13 @@ function drawDonut(segs,total,pct) {
 // CALENDAR — tape additions over time
 // ═══════════════════════════════════════════════
 function renderCalendar() {
-  // ── Debug: show all column keys from first tape ──
-  const firstTape = ALL_TAPES[0] || {};
-  const allKeys = Object.keys(firstTape);
-
-  // Find what the date field actually contains
-  const rawDateSamples = ALL_TAPES.slice(0, 5).map(t => t.date || '(empty)');
-  const dateColInSheet = ALL_TAPES.slice(0, 5).map(t => {
-    // Also check the raw row if accessible
-    return t.date;
-  });
-
-  // Show debug box
   const dbg = document.getElementById('cal-debug');
-  dbg.style.display = 'block';
-  dbg.innerHTML = `
-    <b>🔍 Debug — Column keys found:</b> ${allKeys.map(k=>`<code style="background:rgba(255,255,255,.08);padding:1px 4px;border-radius:3px">${k}</code>`).join(' ')}<br>
-    <b>📅 t.date values (first 5 rows):</b> ${rawDateSamples.map(v=>`<code style="background:rgba(255,255,255,.08);padding:1px 4px;border-radius:3px">${v}</code>`).join(' ')}
-  `;
+  dbg.style.display = 'none';
 
-  // ── Build date → count map ──
+  // Build date → count map from tape data
   const dateMap = {};
   let hasRealDates = false;
-
-  ALL_TAPES.forEach((t) => {
+  ALL_TAPES.forEach(t => {
     const raw = (t.date || '').trim();
     const d = raw ? parseDate(raw) : null;
     if (d && d.getFullYear() > 2000) {
@@ -1825,70 +1808,74 @@ function renderCalendar() {
       const k = fmtKey(d);
       dateMap[k] = (dateMap[k] || 0) + 1;
     }
-    // No date = skip entirely, leave that day blank
   });
 
-  if (hasRealDates) dbg.style.display = 'none'; // hide debug once working
-
-  // ── Build grid from Jan 1 2026 to today ──
+  // Grid spans last 12 months up to today
   const today = new Date(); today.setHours(0,0,0,0);
-  const yearStart = new Date(2026, 0, 1); // Jan 1 2026
-  // Back to the Sunday on or before Jan 1
-  const gridStart = new Date(+yearStart - yearStart.getDay() * 86400000);
+  const gridStart = new Date(today);
+  gridStart.setFullYear(gridStart.getFullYear() - 1);
+  // Back to Sunday
+  gridStart.setDate(gridStart.getDate() - gridStart.getDay());
 
+  // Build weeks array
   const weeks = [];
   let cur = new Date(gridStart);
   while (+cur <= +today) {
     const week = [];
     for (let d = 0; d < 7; d++) {
-      const key = fmtKey(cur);
-      week.push({ date: new Date(cur), key, count: dateMap[key] || 0 });
+      week.push({ date: new Date(cur), key: fmtKey(cur), count: dateMap[fmtKey(cur)] || 0 });
       cur = new Date(+cur + 86400000);
     }
     weeks.push(week);
   }
 
-  // ── Month label row ──
+  // Month labels row
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const DAYS   = ['S','M','T','W','T','F','S'];
   let lastMonth = -1;
-  let monthsHtml = '<div class="cal-months-cell"></div>';
+  let monthsHtml = '<span class="cal-ml" style="width:22px"></span>'; // spacer for day labels col
   weeks.forEach(week => {
     const m = week[0].date.getMonth();
-    monthsHtml += `<div class="cal-months-cell">${m !== lastMonth ? MONTHS[m] : ''}</div>`;
+    monthsHtml += `<span class="cal-ml">${m !== lastMonth ? MONTHS[m] : ''}</span>`;
     if (m !== lastMonth) lastMonth = m;
   });
   document.getElementById('cal-months').innerHTML = monthsHtml;
 
-  // ── Grid ──
-  let gridHtml = '<div class="cal-week">';
-  DAYS.forEach(d => { gridHtml += `<div class="cal-day-label">${d}</div>`; });
+  // Day label column + week columns
+  const DAYS = ['S','M','T','W','T','F','S'];
+  let gridHtml = '';
+
+  // Day labels column
+  gridHtml += '<div class="cal-col">';
+  DAYS.forEach(d => { gridHtml += `<div class="cal-dl">${d}</div>`; });
   gridHtml += '</div>';
 
+  // Week columns
   weeks.forEach(week => {
-    gridHtml += '<div class="cal-week">';
+    gridHtml += '<div class="cal-col">';
     week.forEach(day => {
-      const isFuture = day.date > new Date(+today + 2 * 86400000);
-      const bg = isFuture         ? 'transparent'
-        : day.count === 0         ? 'var(--s3)'
-        : day.count === 1         ? 'rgba(34,197,94,.3)'
-        : day.count <= 3          ? 'rgba(34,197,94,.55)'
-        : day.count <= 6          ? 'rgba(34,197,94,.8)'
-        : 'var(--acc)';
-      const lbl = day.date.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
-      gridHtml += `<div class="cal-day" style="background:${bg}"
-        ${isFuture ? '' : `onmouseenter="showCalTip(event,'${lbl}',${day.count})" onmouseleave="hideCalTip()"`}></div>`;
+      const isFuture = day.date > today;
+      const bg = isFuture ? '#f0f0f0'
+        : day.count === 0 ? '#e8e8e8'
+        : day.count === 1 ? '#bbf7d0'
+        : day.count <= 3  ? '#4ade80'
+        : day.count <= 6  ? '#16a34a'
+        : '#14532d';
+      const lbl = day.date.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+      gridHtml += `<div class="cal-cell" style="background:${bg}"${
+        isFuture ? '' : ` onmouseenter="showCalTip(event,'${lbl}',${day.count})" onmouseleave="hideCalTip()"`
+      }></div>`;
     });
     gridHtml += '</div>';
   });
+
   document.getElementById('cal-grid').innerHTML = gridHtml;
 
-  // ── Summary ──
+  // Summary
   const nowY = today.getFullYear(), nowM = today.getMonth();
-  const activeDays = Object.values(dateMap).filter(v => v > 0).length;
-  const thisYear   = Object.entries(dateMap).filter(([k]) => new Date(k).getFullYear() === nowY).reduce((a,[,v]) => a+v, 0);
-  const thisMonth  = Object.entries(dateMap).filter(([k]) => { const d=new Date(k); return d.getFullYear()===nowY && d.getMonth()===nowM; }).reduce((a,[,v]) => a+v, 0);
-  const peak = Object.entries(dateMap).sort((a,b) => b[1]-a[1])[0];
+  const activeDays = Object.values(dateMap).filter(v=>v>0).length;
+  const thisYear   = Object.entries(dateMap).filter(([k])=>new Date(k).getFullYear()===nowY).reduce((a,[,v])=>a+v,0);
+  const thisMonth  = Object.entries(dateMap).filter(([k])=>{const d=new Date(k);return d.getFullYear()===nowY&&d.getMonth()===nowM;}).reduce((a,[,v])=>a+v,0);
+  const peak = Object.entries(dateMap).sort((a,b)=>b[1]-a[1])[0];
   const peakStr = peak ? `${peak[1]} on ${new Date(peak[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}` : '—';
 
   document.getElementById('cal-summary').innerHTML = [
@@ -1896,8 +1883,7 @@ function renderCalendar() {
     `<span><b>${thisYear}</b> this year</span>`,
     `<span><b>${activeDays}</b> active days</span>`,
     `<span>Peak: <b>${peakStr}</b></span>`,
-    !hasRealDates ? `<span style="color:var(--org)">⚠ Dates not parsed yet — see debug info below</span>` : '',
-  ].filter(Boolean).join('');
+  ].join(' · ');
 }
 
 function fmtKey(d) {
