@@ -772,252 +772,255 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
   #nav-tabs-desktop{display:none !important}
 }
 
-/* ══════════════ SURPRISE PAGE ══════════════ */
-.surp-wrap{
-  min-height:calc(100vh - 52px);
-  display:flex;flex-direction:column;align-items:center;
-  padding:48px 20px 80px;
-  background:linear-gradient(160deg,#fdfcfb 0%,#f5f0ea 100%);
-}
-.surp-hero{text-align:center;margin-bottom:48px}
-.surp-title{
-  font-size:52px;font-weight:900;letter-spacing:8px;
-  color:#1a1a1a;margin-bottom:10px;font-family:Arial,sans-serif;
-}
-.surp-sub{font-size:15px;color:#888;margin-bottom:32px;font-weight:500}
-.surp-btn{
-  display:inline-flex;align-items:center;gap:10px;
-  padding:16px 36px;background:#c2410c;color:#fff;
-  border:none;border-radius:50px;cursor:pointer;
-  font-size:15px;font-weight:800;letter-spacing:.5px;
-  transition:background .2s, transform .15s, box-shadow .2s;
-  box-shadow:0 4px 16px rgba(194,65,12,.35);
-}
-.surp-btn:hover{background:#9a3412;transform:translateY(-2px);box-shadow:0 8px 24px rgba(194,65,12,.4)}
-.surp-btn:active{transform:scale(.96)}
-.surp-btn-icon{font-size:20px}
-
-/* Reveal container */
-.surp-reveal{
-  display:flex;flex-direction:column;align-items:center;gap:32px;
-  width:100%;max-width:420px;
-}
-
-/* ── Cassette shape ── */
-.surp-cassette-wrap{
-  perspective:800px;
-  opacity:0;transform:translateY(40px) scale(.85);
-  transition:opacity .6s ease, transform .6s ease;
-}
-.surp-cassette-wrap.visible{opacity:1;transform:translateY(0) scale(1)}
-
-.surp-cassette{
-  width:260px;height:160px;position:relative;
-  transform-style:preserve-3d;
-  animation:none;
-}
-.surp-cassette.spin{animation:cassetteSpin .8s ease}
-@keyframes cassetteSpin{
-  0%{transform:rotateY(0deg)}
-  50%{transform:rotateY(180deg)}
-  100%{transform:rotateY(360deg)}
-}
-
-.surp-cassette-front{
-  width:260px;height:160px;
-  background:#1a1a1a;border-radius:12px;
-  position:relative;overflow:hidden;
-  box-shadow:0 12px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
-}
-.surp-cassette-hole{
-  position:absolute;top:24px;width:34px;height:34px;
-  background:#111;border-radius:50%;
-  border:3px solid #333;
-  box-shadow:inset 0 2px 6px rgba(0,0,0,.6);
-}
-.surp-cassette-hole.left{left:22px}
-.surp-cassette-hole.right{right:22px}
-.surp-cassette-label{
-  position:absolute;top:14px;left:64px;right:64px;bottom:14px;
-  border-radius:6px;overflow:hidden;
-  background:#fff;
-  box-shadow:0 2px 8px rgba(0,0,0,.3);
-}
-.surp-label-inner{
-  width:100%;height:100%;
-  background:#f5f5f5;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  text-align:center;padding:8px;
-  font-family:Arial,sans-serif;
-}
-.surp-label-inner.has-img img{
-  width:100%;height:100%;object-fit:cover;display:block;
-}
-.surp-label-ref{font-size:9px;font-weight:700;color:#23b202;letter-spacing:.8px;margin-bottom:3px}
-.surp-label-artist{font-size:11px;font-weight:800;color:#1a1a1a;line-height:1.2;margin-bottom:2px;
-  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.surp-label-album{font-size:9px;color:#666;
-  overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.surp-cassette-tape{
-  position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
-  width:100px;height:8px;background:#333;border-radius:4px;
-}
-
-/* ── Info card ── */
-.surp-info-card{
-  background:#fff;border-radius:16px;
-  padding:24px 28px;width:100%;
-  box-shadow:0 4px 24px rgba(0,0,0,.08);border:1px solid #eee;
-  text-align:center;
-  opacity:0;transform:translateY(20px);
-  transition:opacity .5s .4s ease, transform .5s .4s ease;
-}
-.surp-info-card.visible{opacity:1;transform:translateY(0)}
-.surp-info-ref{font-size:11px;font-weight:800;color:#23b202;letter-spacing:1px;margin-bottom:6px}
-.surp-info-artist{font-size:22px;font-weight:900;color:#1a1a1a;margin-bottom:4px;line-height:1.2}
-.surp-info-album{font-size:15px;color:#555;font-style:italic;margin-bottom:12px}
-.surp-info-meta{font-size:12px;color:#aaa;margin-bottom:18px;line-height:1.6}
-.surp-again{
-  padding:10px 28px;background:#f5f5f5;color:#555;
-  border:1.5px solid #e5e5e5;border-radius:50px;
-  font-size:13px;font-weight:700;cursor:pointer;
-  transition:background .15s, transform .1s;
-}
-.surp-again:hover{background:#eee;color:#1a1a1a}
-.surp-again:active{transform:scale(.96)}
-
-@media(max-width:480px){
-  .surp-title{font-size:36px;letter-spacing:5px}
-  .surp-cassette,.surp-cassette-front{width:220px;height:136px}
-  .surp-cassette-hole{width:28px;height:28px;top:18px}
-  .surp-cassette-hole.left{left:16px}
-  .surp-cassette-hole.right{right:16px}
-  .surp-cassette-label{left:52px;right:52px;top:10px;bottom:10px}
-  .surp-cassette-tape{width:80px}
-}
-
 /* ══════════════════════════════
    RANDOM PAGE
 ══════════════════════════════ */
-.rnd-page-wrap{
+
+
+/* ════════════ RANDOM / POKEMON REVEAL ════════════ */
+.pk-bg{
   min-height:calc(100vh - 52px);
   display:flex;align-items:center;justify-content:center;
-  padding:40px 20px;
+  background:radial-gradient(ellipse at 50% 40%, #1a0533 0%, #0d0d1a 60%, #000 100%);
+  position:relative;overflow:hidden;padding:20px;
+}
+.pk-bg::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;
 }
 
 /* ── Idle ── */
-.rnd-idle{text-align:center}
-.rnd-idle-icon{font-size:64px;margin-bottom:16px;animation:rnd-float 3s ease-in-out infinite}
-@keyframes rnd-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.rnd-idle-title{
-  font-size:28px;font-weight:900;letter-spacing:3px;
-  color:#1a1a1a;margin-bottom:8px;font-family:Arial,sans-serif;
+.pk-idle{text-align:center;color:#fff}
+.pk-logo{font-size:64px;margin-bottom:16px;filter:drop-shadow(0 0 20px rgba(255,200,0,.6))}
+.pk-idle-title{
+  font-size:42px;font-weight:900;letter-spacing:6px;
+  background:linear-gradient(135deg,#ffd700,#ff8c00,#ffd700);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:10px;
 }
-.rnd-idle-sub{font-size:14px;color:#888;margin-bottom:32px}
-
-/* ── Roll button ── */
-.rnd-roll-btn{
-  padding:14px 36px;background:#c2410c;color:#fff;
-  border:none;border-radius:12px;font-size:15px;font-weight:800;
-  cursor:pointer;letter-spacing:.5px;
-  transition:background .2s, transform .1s, box-shadow .2s;
-  box-shadow:0 4px 16px rgba(194,65,12,.3);
+.pk-idle-sub{font-size:15px;color:rgba(255,255,255,.55);margin-bottom:40px}
+.pk-draw-btn{
+  padding:18px 44px;font-size:16px;font-weight:800;letter-spacing:.5px;
+  background:linear-gradient(135deg,#ffd700,#ff8c00);
+  color:#000;border:none;border-radius:50px;cursor:pointer;
+  box-shadow:0 0 30px rgba(255,180,0,.5), 0 4px 20px rgba(0,0,0,.4);
+  transition:transform .15s, box-shadow .15s;
 }
-.rnd-roll-btn:hover{background:#9a3412;box-shadow:0 6px 20px rgba(194,65,12,.4)}
-.rnd-roll-btn:active{transform:scale(.97)}
+.pk-draw-btn:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(255,180,0,.7)}
+.pk-draw-btn:active{transform:scale(.97)}
 
-/* ── Reveal wrapper ── */
-.rnd-reveal{
-  text-align:center;display:flex;flex-direction:column;
-  align-items:center;gap:24px;
+/* ── Pack ── */
+.pk-pack{text-align:center;cursor:pointer}
+.pk-pack-inner{
+  width:180px;height:280px;margin:0 auto 20px;border-radius:14px;
+  background:linear-gradient(145deg,#1a0533,#3d0080,#1a0533);
+  border:2px solid rgba(255,215,0,.4);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 0 40px rgba(180,0,255,.4),0 10px 40px rgba(0,0,0,.5);
+  position:relative;overflow:hidden;
+  animation:packFloat 2s ease-in-out infinite;
+  transition:transform .1s;
 }
+.pk-pack-inner:active{transform:scale(.96)}
+@keyframes packFloat{
+  0%,100%{transform:translateY(0) rotate(-1deg)}
+  50%{transform:translateY(-10px) rotate(1deg)}
+}
+.pk-pack-logo{font-size:52px;margin-bottom:8px;filter:drop-shadow(0 0 12px rgba(255,215,0,.8))}
+.pk-pack-text{
+  font-size:13px;font-weight:900;letter-spacing:3px;text-align:center;
+  background:linear-gradient(135deg,#ffd700,#ff8c00);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.pk-pack-shine{
+  position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:linear-gradient(45deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);
+  animation:packShine 3s linear infinite;
+}
+@keyframes packShine{from{transform:translateX(-100%) rotate(45deg)}to{transform:translateX(100%) rotate(45deg)}}
+.pk-pack-hint{color:rgba(255,255,255,.4);font-size:13px;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
 
-/* ── 3‑D card ── */
-.rnd-cassette-wrap{
-  width:220px;height:220px;perspective:800px;cursor:pointer;
+/* ── Pack open animation ── */
+@keyframes packRip{
+  0%{transform:scale(1) rotate(0deg);opacity:1}
+  30%{transform:scale(1.1) rotate(-3deg)}
+  60%{transform:scale(0.8) rotate(5deg);opacity:.5}
+  100%{transform:scale(0) rotate(20deg);opacity:0}
+}
+.pk-pack-inner.ripping{animation:packRip .5s ease forwards !important}
+
+/* ── Card scene ── */
+.pk-reveal{
+  display:flex;flex-direction:column;align-items:center;gap:28px;
   position:relative;
 }
-.rnd-face{
-  width:100%;height:100%;border-radius:16px;
-  position:absolute;top:0;left:0;
-  backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  transition:transform .7s cubic-bezier(.4,.2,.2,1);
+.pk-card-scene{perspective:900px}
+.pk-card{
+  width:240px;height:340px;position:relative;
+  transform-style:preserve-3d;
+  transform:rotateY(180deg);
+  transition:transform .8s cubic-bezier(.4,0,.2,1);
+}
+.pk-card.flipped{transform:rotateY(0deg)}
+.pk-card-back,.pk-card-front{
+  position:absolute;inset:0;border-radius:14px;
+  backface-visibility:hidden;overflow:hidden;
+}
+/* Card back */
+.pk-card-back{
+  background:linear-gradient(145deg,#1a0533,#3d0080);
+  border:2px solid rgba(255,215,0,.3);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;
+  box-shadow:0 0 30px rgba(120,0,200,.4);
+  transform:rotateY(180deg);
+}
+.pk-card-back-pattern{
+  position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) 1px,transparent 0,transparent 50%);
+  background-size:8px 8px;
+}
+.pk-card-back-logo{font-size:56px;position:relative;filter:drop-shadow(0 0 16px rgba(255,215,0,.7))}
+
+/* Card front */
+.pk-card-front{
+  display:flex;flex-direction:column;
+  background:#fff;
+  box-shadow:0 10px 50px rgba(0,0,0,.6), 0 0 0 2px rgba(255,215,0,.5);
+}
+.pk-card-rarity{
+  height:6px;width:100%;
+  background:linear-gradient(90deg,#888,#aaa);
+  flex-shrink:0;
+}
+.pk-card-rarity.common{background:linear-gradient(90deg,#9e9e9e,#bdbdbd)}
+.pk-card-rarity.uncommon{background:linear-gradient(90deg,#23b202,#4caf50)}
+.pk-card-rarity.rare{background:linear-gradient(90deg,#1565c0,#42a5f5)}
+.pk-card-rarity.ultra{background:linear-gradient(90deg,#f57f17,#ffca28)}
+.pk-card-rarity.secret{
+  background:linear-gradient(90deg,#ad1457,#e91e63,#9c27b0,#673ab7,#1565c0,#0097a7,#23b202,#f57f17,#ad1457);
+  background-size:400% 100%;
+  animation:rainbowShift 2s linear infinite;
+}
+@keyframes rainbowShift{0%{background-position:0% 50%}100%{background-position:400% 50%}}
+
+.pk-card-img-wrap{
+  flex:1;overflow:hidden;position:relative;
+  background:linear-gradient(160deg,#f8f8f8,#eee);
   display:flex;align-items:center;justify-content:center;
 }
-.rnd-face-front{
-  background:linear-gradient(135deg,#1a1a1a,#333);
-  border:2px solid #444;
-  transform:rotateY(0deg);
-}
-.rnd-face-back{
-  transform:rotateY(-180deg);
-  overflow:hidden;
-  background:#f0f0f0;
-  border:2px solid #e0e0e0;
-}
-/* flipped state */
-.rnd-cassette-wrap.flipped .rnd-face-front{transform:rotateY(180deg)}
-.rnd-cassette-wrap.flipped .rnd-face-back{transform:rotateY(0deg)}
+.pk-card-img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.pk-card-img-placeholder{font-size:72px}
 
-.rnd-qmark{
-  font-size:80px;font-weight:900;color:#fff;
-  opacity:.2;font-family:Arial,sans-serif;
-  animation:rnd-pulse 1.5s ease-in-out infinite;
+.pk-card-body{
+  padding:10px 12px 12px;background:#fff;
+  flex-shrink:0;
 }
-@keyframes rnd-pulse{0%,100%{opacity:.15}50%{opacity:.35}}
-
-.rnd-cover{
-  width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;
-}
-.rnd-cover-placeholder{
-  font-size:64px;display:flex;align-items:center;justify-content:center;
-  width:100%;height:100%;
+.pk-card-ref{font-size:9px;font-weight:800;color:#23b202;letter-spacing:1px;margin-bottom:2px}
+.pk-card-name{font-size:14px;font-weight:900;color:#1a1a1a;line-height:1.2;margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pk-card-album{font-size:11px;color:#666;font-style:italic;margin-bottom:6px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pk-card-tags{display:flex;flex-wrap:wrap;gap:3px}
+.pk-tag{
+  font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;
+  background:#f0f0f0;color:#666;letter-spacing:.3px;
 }
 
-/* ── Tape info ── */
-.rnd-info{
-  opacity:0;transform:translateY(12px);
-  transition:opacity .5s ease .3s, transform .5s ease .3s;
+/* Holographic shimmer overlay */
+.pk-card-holo{
+  position:absolute;inset:0;border-radius:14px;
+  background:linear-gradient(135deg,
+    rgba(255,0,128,.15) 0%,rgba(255,165,0,.15) 15%,
+    rgba(255,255,0,.15) 30%,rgba(0,255,128,.15) 45%,
+    rgba(0,200,255,.15) 60%,rgba(100,0,255,.15) 75%,
+    rgba(255,0,128,.15) 90%);
+  background-size:400% 400%;
+  animation:holoShift 3s ease infinite;
+  opacity:0;pointer-events:none;
+  mix-blend-mode:screen;
+  transition:opacity .5s 1s;
 }
-.rnd-info.visible{opacity:1;transform:translateY(0)}
-.rnd-info-ref{
-  font-size:12px;font-weight:800;letter-spacing:1px;
-  color:#23b202;margin-bottom:6px;
-}
-.rnd-info-artist{
-  font-size:22px;font-weight:900;color:#1a1a1a;
-  margin-bottom:4px;font-family:Arial,sans-serif;
-}
-.rnd-info-album{font-size:15px;color:#666;margin-bottom:10px}
-.rnd-info-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
-.rnd-tag{
-  padding:4px 10px;background:#f5f5f5;border-radius:20px;
-  font-size:11px;color:#666;font-weight:600;
+.pk-card.flipped .pk-card-holo{opacity:1}
+@keyframes holoShift{
+  0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}
 }
 
-.rnd-again-btn{
-  padding:11px 28px;font-size:14px;
-  background:#1a1a1a;box-shadow:0 4px 14px rgba(0,0,0,.2);
+/* ── Screen flash ── */
+@keyframes screenFlash{
+  0%{background:rgba(255,255,255,0)}
+  15%{background:rgba(255,255,255,.95)}
+  40%{background:rgba(255,255,255,.2)}
+  100%{background:rgba(255,255,255,0)}
 }
-.rnd-again-btn:hover{background:#333;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.pk-bg.flash::after{
+  content:'';position:fixed;inset:0;z-index:999;
+  animation:screenFlash .6s ease forwards;
+  pointer-events:none;
+}
 
-/* Shake animation when rolling */
-@keyframes rnd-shake{
-  0%,100%{transform:rotate(0)}
-  15%{transform:rotate(-8deg) scale(1.05)}
-  30%{transform:rotate(8deg) scale(1.05)}
-  45%{transform:rotate(-6deg)}
-  60%{transform:rotate(6deg)}
-  75%{transform:rotate(-3deg)}
-  90%{transform:rotate(3deg)}
+/* ── Particles ── */
+.pk-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.pk-particle{
+  position:absolute;border-radius:50%;
+  animation:particleFly var(--dur) ease-out forwards;
+  opacity:0;
 }
-.rnd-cassette-wrap.shaking{animation:rnd-shake .6s ease}
+@keyframes particleFly{
+  0%{transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) scale(0);opacity:0}
+}
+@keyframes starSpin{
+  0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1}
+  100%{transform:translate(var(--tx),var(--ty)) scale(0) rotate(720deg);opacity:0}
+}
+.pk-particle.star{border-radius:0;animation:starSpin var(--dur) ease-out forwards}
+
+/* ── Rarity label ── */
+.pk-rarity-badge{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  padding:3px 14px;border-radius:20px;font-size:11px;font-weight:900;
+  letter-spacing:1px;white-space:nowrap;
+  box-shadow:0 0 12px rgba(0,0,0,.4);
+}
+.pk-rarity-badge.common{background:#9e9e9e;color:#fff}
+.pk-rarity-badge.uncommon{background:#23b202;color:#fff}
+.pk-rarity-badge.rare{background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff}
+.pk-rarity-badge.ultra{background:linear-gradient(135deg,#f57f17,#ffca28);color:#000}
+.pk-rarity-badge.secret{
+  background:linear-gradient(135deg,#ad1457,#9c27b0,#1565c0);color:#fff;
+  animation:badgePulse 1s ease-in-out infinite;
+}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 10px rgba(200,0,255,.6)}50%{box-shadow:0 0 25px rgba(200,0,255,1)}}
+
+.pk-card-scene{position:relative}
+
+/* Again btn */
+.pk-again-btn{
+  padding:12px 32px;font-size:14px;font-weight:800;letter-spacing:.4px;
+  background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);
+  border:1.5px solid rgba(255,255,255,.2);border-radius:50px;cursor:pointer;
+  backdrop-filter:blur(8px);transition:background .2s, transform .1s;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .4s, transform .4s, background .2s;
+}
+.pk-again-btn.visible{opacity:1;transform:translateY(0)}
+.pk-again-btn:hover{background:rgba(255,255,255,.2);color:#fff}
+.pk-again-btn:active{transform:scale(.96)}
+
+/* Glow ring on card reveal */
+@keyframes glowPulse{
+  0%,100%{box-shadow:0 10px 50px rgba(0,0,0,.6),0 0 0 2px rgba(255,215,0,.5),0 0 40px rgba(255,180,0,.3)}
+  50%{box-shadow:0 10px 50px rgba(0,0,0,.6),0 0 0 3px rgba(255,215,0,.9),0 0 80px rgba(255,180,0,.6)}
+}
+.pk-card.flipped .pk-card-front{animation:glowPulse 2s ease-in-out infinite}
 
 @media(max-width:480px){
-  .rnd-cassette-wrap{width:180px;height:180px}
-  .rnd-idle-title{font-size:22px}
-  .rnd-info-artist{font-size:18px}
+  .pk-idle-title{font-size:30px;letter-spacing:3px}
+  .pk-card{width:200px;height:285px}
+  .pk-pack-inner{width:150px;height:235px}
 }
 </style>
 </head>
@@ -1056,7 +1059,7 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
   <div class="nav-tabs" id="nav-tabs-desktop">
     <button class="tab active" onclick="showPage('search',this)">Search</button>
     <button class="tab" onclick="showPage('collection',this)">Collection</button>
-    <button class="tab" id="surprise-tab" onclick="showPage('surprise',this)">🎲 Surprise</button>
+    <button class="tab" id="random-tab" onclick="showPage('random',this)">🎲 Random</button>
     <button class="tab" id="random-tab" onclick="showPage('random',this)">🎲 Random</button>
     <button class="tab" id="dashboard-tab" style="display:none" onclick="showPage('dashboard',this)">Dashboard</button>
     <button class="tab" id="admin-tab" style="display:none" onclick="showPage('admin',this)">
@@ -1085,7 +1088,7 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 <div id="mobile-menu" class="mobile-menu">
   <button class="mob-tab active" onclick="mobNav('search')">🔍 Search</button>
   <button class="mob-tab" onclick="mobNav('collection')">📼 Collection</button>
-  <button class="mob-tab" id="mob-surprise-tab" onclick="mobNav('surprise')">🎲 Surprise</button>
+  <button class="mob-tab" onclick="mobNav('random')">🎲 Random</button>
   <button class="mob-tab" onclick="mobNav('random')">🎲 Random</button>
   <button class="mob-tab" id="mob-dashboard-tab" style="display:none" onclick="mobNav('dashboard')">📊 Dashboard</button>
   <button class="mob-tab" id="mob-admin-tab" style="display:none" onclick="mobNav('admin')">✏️ Admin</button>
@@ -1218,37 +1221,60 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
   </div>
 </div>
 
-<!-- ═══════════════ SURPRISE PAGE ═══════════════ -->
-<div class="page" id="page-surprise" style="display:none">
-  <div class="surp-wrap">
-    <div class="surp-hero">
-      <h1 class="surp-title">SURPRISE</h1>
-      <p class="surp-sub">Découvrez une cassette au hasard de l'archive</p>
-      <button class="surp-btn" id="surp-btn" onclick="revealTape()">
-        <span class="surp-btn-icon">🎲</span>
-        <span class="surp-btn-text">Tirer une cassette</span>
+
+<!-- ══ RANDOM ══ -->
+<div class="page" id="page-random" style="display:none">
+  <div class="pk-bg" id="pk-bg">
+    <!-- Stage: idle -->
+    <div class="pk-idle" id="pk-idle">
+      <div class="pk-logo">📼</div>
+      <h1 class="pk-idle-title">RANDOM TAPE</h1>
+      <p class="pk-idle-sub">Une cassette mystère vous attend</p>
+      <button class="pk-draw-btn" onclick="pkDraw()">
+        <span>Révéler une cassette</span>
       </button>
     </div>
-    <div class="surp-reveal" id="surp-reveal">
-      <div class="surp-cassette-wrap" id="surp-cassette-wrap">
-        <div class="surp-cassette" id="surp-cassette">
-          <div class="surp-cassette-front">
-            <div class="surp-cassette-hole left"></div>
-            <div class="surp-cassette-hole right"></div>
-            <div class="surp-cassette-label" id="surp-label">
-              <div class="surp-label-inner" id="surp-label-inner"></div>
+
+    <!-- Stage: pack ripping (hidden) -->
+    <div class="pk-pack" id="pk-pack" style="display:none">
+      <div class="pk-pack-inner" id="pk-pack-inner">
+        <div class="pk-pack-front">
+          <div class="pk-pack-logo">📼</div>
+          <div class="pk-pack-text">CASSETTE<br>MAROC</div>
+          <div class="pk-pack-shine"></div>
+        </div>
+      </div>
+      <p class="pk-pack-hint">Cliquez pour ouvrir !</p>
+    </div>
+
+    <!-- Stage: card reveal (hidden) -->
+    <div class="pk-reveal" id="pk-reveal" style="display:none">
+      <div class="pk-card-scene" id="pk-card-scene">
+        <div class="pk-card" id="pk-card">
+          <!-- Back of card -->
+          <div class="pk-card-back">
+            <div class="pk-card-back-pattern"></div>
+            <div class="pk-card-back-logo">📼</div>
+          </div>
+          <!-- Front of card -->
+          <div class="pk-card-front" id="pk-card-front">
+            <div class="pk-card-rarity" id="pk-rarity-bar"></div>
+            <div class="pk-card-img-wrap" id="pk-card-img-wrap">
+              <div class="pk-card-img-placeholder" id="pk-card-img">📼</div>
             </div>
-            <div class="surp-cassette-tape"></div>
+            <div class="pk-card-body">
+              <div class="pk-card-ref" id="pk-card-ref"></div>
+              <div class="pk-card-name" id="pk-card-name"></div>
+              <div class="pk-card-album" id="pk-card-album"></div>
+              <div class="pk-card-tags" id="pk-card-tags"></div>
+            </div>
+            <div class="pk-card-holo" id="pk-holo"></div>
           </div>
         </div>
       </div>
-      <div class="surp-info-card" id="surp-info-card">
-        <div class="surp-info-ref" id="surp-info-ref"></div>
-        <div class="surp-info-artist" id="surp-info-artist"></div>
-        <div class="surp-info-album" id="surp-info-album"></div>
-        <div class="surp-info-meta" id="surp-info-meta"></div>
-        <button class="surp-again" onclick="revealTape()">🎲 Une autre</button>
-      </div>
+      <!-- Particles container -->
+      <div class="pk-particles" id="pk-particles"></div>
+      <button class="pk-again-btn" id="pk-again-btn" onclick="pkDraw()">🎲 Une autre cassette</button>
     </div>
   </div>
 </div>
@@ -1413,138 +1439,145 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 </div>
 
 <script>
-// ══════════════════════════════
-// RANDOM PAGE
-// ══════════════════════════════
-function rollRandomTape() {
+// ════════════ RANDOM / POKEMON REVEAL ════════════
+const RARITIES = [
+  {name:'COMMUNE',   cls:'common',   minRef:1,  maxRef:999, weight:50},
+  {name:'PEU COMMUNE',cls:'uncommon', minRef:1,  maxRef:999, weight:30},
+  {name:'RARE',      cls:'rare',     minRef:1,  maxRef:999, weight:14},
+  {name:'ULTRA RARE',cls:'ultra',    minRef:1,  maxRef:999, weight:5},
+  {name:'SECRÈTE ✦', cls:'secret',   minRef:1,  maxRef:999, weight:1},
+];
+
+function pkGetRarity(tape) {
+  // If no ref, base on weighted random
+  const roll = Math.random() * 100;
+  let cumul = 0;
+  for (const r of RARITIES) {
+    cumul += r.weight;
+    if (roll < cumul) return r;
+  }
+  return RARITIES[0];
+}
+
+function pkDraw() {
   const pool = ALL_TAPES.filter(t => t.artist || t.album);
   if (!pool.length) return;
 
-  // Show reveal area, hide idle
-  document.getElementById('rnd-idle').style.display = 'none';
-  document.getElementById('rnd-reveal').style.display = 'flex';
+  // Reset to pack stage
+  document.getElementById('pk-idle').style.display = 'none';
+  document.getElementById('pk-reveal').style.display = 'none';
+  document.getElementById('pk-pack').style.display = 'block';
 
-  // Reset card to face-front
-  const wrap = document.getElementById('rnd-cassette-wrap');
-  const info = document.getElementById('rnd-info');
-  wrap.classList.remove('flipped','shaking');
-  info.classList.remove('visible');
+  const pack = document.getElementById('pk-pack-inner');
+  pack.classList.remove('ripping');
 
-  // Pick random tape
-  const t = pool[Math.floor(Math.random() * pool.length)];
+  // Pick tape
+  const tape = pool[Math.floor(Math.random() * pool.length)];
+  const rarity = pkGetRarity(tape);
 
-  // Populate info (hidden until flip)
-  const artUrl = fixArtUrl(t.artwork);
-  const cover = document.getElementById('rnd-cover');
-  const ph    = document.getElementById('rnd-cover-placeholder');
+  // Store for reveal
+  pack._tape = tape;
+  pack._rarity = rarity;
 
+  // Click pack to open
+  pack.onclick = () => pkOpenPack(tape, rarity);
+}
+
+function pkOpenPack(tape, rarity) {
+  const pack = document.getElementById('pk-pack-inner');
+  pack.classList.add('ripping');
+  setTimeout(() => pkRevealCard(tape, rarity), 520);
+}
+
+function pkRevealCard(tape, rarity) {
+  document.getElementById('pk-pack').style.display = 'none';
+  document.getElementById('pk-reveal').style.display = 'flex';
+
+  // Reset card
+  const card = document.getElementById('pk-card');
+  card.classList.remove('flipped');
+  const againBtn = document.getElementById('pk-again-btn');
+  againBtn.classList.remove('visible');
+
+  // Populate card face
+  document.getElementById('pk-rarity-bar').className = 'pk-card-rarity ' + rarity.cls;
+  document.getElementById('pk-card-ref').textContent = tape.ref ? '#' + tape.ref : '';
+  document.getElementById('pk-card-name').textContent = tape.artist || '—';
+  document.getElementById('pk-card-album').textContent = tape.album || '—';
+
+  const tags = [tape.genre, tape.label].filter(Boolean);
+  document.getElementById('pk-card-tags').innerHTML = tags
+    .map(t => `<span class="pk-tag">${esc(t)}</span>`).join('');
+
+  // Artwork
+  const imgWrap = document.getElementById('pk-card-img-wrap');
+  const artUrl = fixArtUrl(tape.artwork);
   if (artUrl) {
-    cover.src = artUrl;
-    cover.style.display = 'block';
-    ph.style.display = 'none';
-    cover.onerror = () => { cover.style.display='none'; ph.style.display='flex'; };
+    imgWrap.innerHTML = `<img src="${artUrl}" alt="" onerror="this.parentNode.innerHTML='<div class=pk-card-img-placeholder>📼</div>'">`;
   } else {
-    cover.style.display = 'none';
-    ph.style.display = 'flex';
+    imgWrap.innerHTML = '<div class="pk-card-img-placeholder">📼</div>';
   }
 
-  document.getElementById('rnd-info-ref').textContent    = t.ref ? '#' + t.ref : '';
-  document.getElementById('rnd-info-artist').textContent = t.artist || '—';
-  document.getElementById('rnd-info-album').textContent  = t.album  || '—';
+  // Rarity badge
+  const scene = document.getElementById('pk-card-scene');
+  const oldBadge = scene.querySelector('.pk-rarity-badge');
+  if (oldBadge) oldBadge.remove();
+  const badge = document.createElement('div');
+  badge.className = 'pk-rarity-badge ' + rarity.cls;
+  badge.textContent = rarity.name;
+  scene.appendChild(badge);
 
-  const tags = [t.genre, t.label].filter(Boolean);
-  document.getElementById('rnd-info-tags').innerHTML =
-    tags.map(g => `<span class="rnd-tag">${esc(g)}</span>`).join('');
-
-  // Shake then flip after short delay
+  // Flash screen then flip card
+  const bg = document.getElementById('pk-bg');
   setTimeout(() => {
-    wrap.classList.add('shaking');
+    bg.classList.add('flash');
+    setTimeout(() => bg.classList.remove('flash'), 700);
+    card.classList.add('flipped');
+    // Particles
     setTimeout(() => {
-      wrap.classList.remove('shaking');
-      wrap.classList.add('flipped');
-      setTimeout(() => info.classList.add('visible'), 400);
-    }, 650);
-  }, 80);
+      spawnParticles(rarity);
+      setTimeout(() => { againBtn.classList.add('visible'); }, 600);
+    }, 500);
+  }, 200);
 }
 
-// ══════════════ SURPRISE PAGE ══════════════
-function revealTape() {
-  const pool = ALL_TAPES.filter(t => t.artist || t.album);
-  if (!pool.length) return;
-  const t = pool[Math.floor(Math.random() * pool.length)];
+function spawnParticles(rarity) {
+  const container = document.getElementById('pk-particles');
+  container.innerHTML = '';
+  const colors = {
+    common:   ['#9e9e9e','#bdbdbd','#e0e0e0'],
+    uncommon: ['#23b202','#4caf50','#a5d6a7'],
+    rare:     ['#1565c0','#42a5f5','#90caf9','#fff'],
+    ultra:    ['#f57f17','#ffca28','#ffe082','#fff'],
+    secret:   ['#ff0080','#ff8c00','#ffff00','#00ff80','#00c8ff','#8000ff','#fff'],
+  };
+  const col = colors[rarity.cls] || colors.common;
+  const count = rarity.cls === 'secret' ? 80 : rarity.cls === 'ultra' ? 50 : rarity.cls === 'rare' ? 35 : 20;
 
-  // Reset animations
-  const wrap  = document.getElementById('surp-cassette-wrap');
-  const cass  = document.getElementById('surp-cassette');
-  const card  = document.getElementById('surp-info-card');
-  const label = document.getElementById('surp-label-inner');
-
-  wrap.classList.remove('visible');
-  card.classList.remove('visible');
-  cass.classList.remove('spin');
-
-  // Short delay then animate in
-  setTimeout(() => {
-    // Build label content
-    const artUrl = fixArtUrl(t.artwork);
-    if (artUrl) {
-      label.className = 'surp-label-inner has-img';
-      label.innerHTML = `<img src="${artUrl}" alt="" onerror="this.parentNode.className='surp-label-inner';this.parentNode.innerHTML=buildLabelText('${(t.ref||'').replace(/'/g,'\'')}','${(t.artist||'').replace(/'/g,'\'')}','${(t.album||'').replace(/'/g,'\'')}')">`;
-    } else {
-      label.className = 'surp-label-inner';
-      label.innerHTML = buildLabelText(t.ref||'', t.artist||'', t.album||'');
-    }
-
-    // Show cassette
-    wrap.classList.add('visible');
-    void cass.offsetWidth;
-    cass.classList.add('spin');
-
-    // Fill info card
-    document.getElementById('surp-info-ref').textContent = t.ref ? '#' + t.ref : '';
-    document.getElementById('surp-info-artist').textContent = t.artist || '—';
-    document.getElementById('surp-info-album').textContent = t.album || '—';
-    const meta = [t.genre, t.label, t.year].filter(Boolean).join(' · ');
-    document.getElementById('surp-info-meta').textContent = meta;
-
-    // Show card after spin
-    setTimeout(() => { card.classList.add('visible'); }, 500);
-  }, 80);
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    const isstar = rarity.cls !== 'common' && Math.random() > .6;
+    p.className = 'pk-particle' + (isstar ? ' star' : '');
+    const size = 4 + Math.random() * (isstar ? 14 : 8);
+    const color = col[Math.floor(Math.random() * col.length)];
+    const tx = (Math.random() - .5) * 400;
+    const ty = (Math.random() - 1) * 300;
+    const dur = .6 + Math.random() * 1.2;
+    p.style.cssText = `
+      left:50%;top:50%;
+      width:${size}px;height:${size}px;
+      background:${color};
+      --tx:${tx}px;--ty:${ty}px;
+      --dur:${dur}s;
+      animation-delay:${Math.random() * .2}s;
+      ${isstar ? 'clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)' : ''}
+    `;
+    container.appendChild(p);
+  }
 }
 
-function buildLabelText(ref, artist, album) {
-  return `<div class="surp-label-ref">${ref ? '#'+ref : ''}</div>`
-       + `<div class="surp-label-artist">${esc(artist)}</div>`
-       + `<div class="surp-label-album">${esc(album)}</div>`;
-}
-
-function toggleHamburger() {
-  const btn = document.getElementById('hamburger-btn');
-  const menu = document.getElementById('mobile-menu');
-  btn.classList.toggle('open');
-  menu.classList.toggle('open');
-}
-
-function mobNav(page) {
-  // Close menu
-  document.getElementById('hamburger-btn').classList.remove('open');
-  document.getElementById('mobile-menu').classList.remove('open');
-  // Activate correct desktop tab and show page
-  const tabs = document.querySelectorAll('#nav-tabs-desktop .tab');
-  const pageMap = {search:0, collection:1, dashboard:2, admin:3};
-  tabs.forEach(t => t.classList.remove('active'));
-  // find matching tab
-  tabs.forEach(t => {
-    if (t.textContent.trim().toLowerCase().includes(page)) t.classList.add('active');
-  });
-  // Update mob-tab active
-  document.querySelectorAll('.mob-tab').forEach(t => t.classList.remove('active'));
-  const mobMap = {search:0, collection:1, dashboard:2, admin:3};
-  const mobTabs = document.querySelectorAll('.mob-tab');
-  if (mobTabs[mobMap[page]]) mobTabs[mobMap[page]].classList.add('active');
-  showPage(page, null);
-}
-
+// ══════════════════════════════
+// RANDOM PAGE
 // Close menu when clicking outside
 document.addEventListener('click', function(e) {
   const btn = document.getElementById('hamburger-btn');
@@ -3269,38 +3302,4 @@ function setAdminStatus(type, msg) {
 
 
 <!-- ═══ RANDOM PAGE ═══ -->
-<div class="page" id="page-random">
-  <div class="rnd-page-wrap">
-    <!-- idle state -->
-    <div class="rnd-idle" id="rnd-idle">
-      <div class="rnd-idle-icon">🎲</div>
-      <h2 class="rnd-idle-title">RANDOM TAPE</h2>
-      <p class="rnd-idle-sub">Discover a random cassette from the archive</p>
-      <button class="rnd-roll-btn" onclick="rollRandomTape()">Roll the dice</button>
-    </div>
-
-    <!-- reveal state (hidden until rolled) -->
-    <div class="rnd-reveal" id="rnd-reveal" style="display:none">
-      <div class="rnd-cassette-wrap" id="rnd-cassette-wrap">
-        <!-- front (question mark) -->
-        <div class="rnd-face rnd-face-front" id="rnd-face-front">
-          <div class="rnd-qmark">?</div>
-        </div>
-        <!-- back (tape info) -->
-        <div class="rnd-face rnd-face-back" id="rnd-face-back">
-          <img class="rnd-cover" id="rnd-cover" src="" alt=""/>
-          <div class="rnd-cover-placeholder" id="rnd-cover-placeholder">📼</div>
-        </div>
-      </div>
-      <div class="rnd-info" id="rnd-info">
-        <div class="rnd-info-ref" id="rnd-info-ref"></div>
-        <div class="rnd-info-artist" id="rnd-info-artist"></div>
-        <div class="rnd-info-album" id="rnd-info-album"></div>
-        <div class="rnd-info-tags" id="rnd-info-tags"></div>
-      </div>
-      <button class="rnd-roll-btn rnd-again-btn" onclick="rollRandomTape()">Roll again</button>
-    </div>
-  </div>
-</div>
-</body>
-</html>
+>
