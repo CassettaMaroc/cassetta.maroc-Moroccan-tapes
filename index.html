@@ -992,6 +992,9 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 .pk-card-back-logo-img{width:56px;height:56px;border-radius:10px;object-fit:cover;display:block}
 
 .pk-card-back-logo img{width:80px;height:80px;border-radius:14px;object-fit:cover;display:block;box-shadow:0 4px 16px rgba(35,178,2,.3)}
+
+/* Label card artwork */
+.label-img img{width:100%;height:100%;object-fit:cover;display:block}
 </style>
 </head>
 <body>
@@ -1405,7 +1408,9 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
   </div>
 </div>
 
-<script>
+<script>_savedScrollPos = 0;
+let _savedScrollPosLabel = 0;
+
 // ── HAMBURGER MENU ──
 function toggleHamburger() {
   const btn = document.getElementById('hamburger-btn');
@@ -2183,10 +2188,17 @@ function renderLabelGrid(lmap, labels, letter) {
     const digCount = tapes.filter(t=>t.digitized).length;
     const safe = name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     const initials = name.slice(0,2).toUpperCase();
+    // Find first tape in this label that has artwork
+    const artTape = tapes.find(t => fixArtUrl(t.artwork));
+    const artUrl = artTape ? fixArtUrl(artTape.artwork) : '';
+    const imgHtml = artUrl
+      ? `<img src="${artUrl}" alt="" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+        + `<div class="artist-placeholder" style="display:none">${initials}</div>`
+      : `<div class="artist-placeholder">${initials}</div>`;
     return `
       <div class="artist-card" onclick="showLabel('${safe}')">
         <div class="artist-card-img label-img">
-          <div class="artist-placeholder">${initials}</div>
+          ${imgHtml}
         </div>
         <div class="artist-card-name">${esc(name)}</div>
         <div class="artist-card-sub">${tapes.length} tape${tapes.length!==1?'s':''} · ${artists.length} artist${artists.length!==1?'s':''}</div>
@@ -2197,6 +2209,7 @@ function renderLabelGrid(lmap, labels, letter) {
 }
 
 function showLabel(labelName) {
+  _savedScrollPosLabel = window.scrollY || document.documentElement.scrollTop;
   const tapes = ALL_TAPES.filter(t =>
     (t.label||'').trim() === labelName || (!t.label && labelName === 'Unknown')
   );
@@ -2215,11 +2228,13 @@ function showLabel(labelName) {
 function showLabelList() {
   document.getElementById('col-label-artists-view').style.display = 'none';
   document.getElementById('col-label-list-view').style.display = '';
-  window.scrollTo(0,0);
+  requestAnimationFrame(() => window.scrollTo(0, _savedScrollPosLabel || 0));
 }
 
 
 function showArtist(name) {
+  // Save scroll position before leaving artist grid
+  _savedScrollPos = window.scrollY || document.documentElement.scrollTop;
   const tapes = ALL_TAPES.filter(t => t.artist === name);
   document.getElementById('col-detail-sub').textContent = `${tapes.length} tape${tapes.length!==1?'s':''} · ${tapes.filter(t=>t.digitized).length} digitized`;
   document.getElementById('col-detail-grid').innerHTML = tapes.map(t => colTile(t)).join('');
@@ -2231,7 +2246,8 @@ function showArtist(name) {
 function showArtistList() {
   document.getElementById('col-detail-view').style.display = 'none';
   document.getElementById('col-artists-view').style.display = 'block';
-  window.scrollTo(0,0);
+  // Restore scroll position to where user was
+  requestAnimationFrame(() => window.scrollTo(0, _savedScrollPos || 0));
 }
 
 function colTile(t) {
