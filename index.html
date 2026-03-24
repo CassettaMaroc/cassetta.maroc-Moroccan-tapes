@@ -995,6 +995,90 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 
 /* Label card artwork */
 .label-img img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ════════════ PLAYER PAGE ════════════ */
+.plr-wrap{padding:28px 20px 120px;max-width:860px;margin:0 auto}
+.plr-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.plr-title{font-size:28px;font-weight:900;letter-spacing:3px;color:#1a1a1a;margin-bottom:4px}
+.plr-sub{font-size:13px;color:#888}
+.plr-search-wrap{flex:1;max-width:280px}
+.plr-search{width:100%;padding:10px 14px;border:1.5px solid #e0dbd4;border-radius:10px;
+  font-size:14px;background:#faf9f7;outline:none;transition:border-color .2s}
+.plr-search:focus{border-color:#23b202}
+
+/* Now playing bar */
+.plr-now{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:#fff;border:1.5px solid #e8e2d9;border-radius:14px;
+  padding:14px 16px;margin-bottom:20px;
+  box-shadow:0 4px 20px rgba(0,0,0,.07);
+  position:sticky;top:56px;z-index:100;
+}
+.plr-now-art{
+  width:48px;height:48px;border-radius:8px;overflow:hidden;
+  background:#f0f0f0;display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.plr-now-art img{width:100%;height:100%;object-fit:cover;display:block}
+.plr-now-info{flex:1;min-width:100px}
+.plr-now-title{font-size:13px;font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plr-now-artist{font-size:11px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plr-now-controls{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.plr-ctrl{background:none;border:none;font-size:18px;cursor:pointer;color:#555;padding:4px 6px;border-radius:6px;transition:color .15s}
+.plr-ctrl:hover{color:#23b202}
+.plr-playpause{font-size:22px;color:#23b202}
+.plr-now-progress{flex:1;min-width:140px}
+.plr-prog-bar{height:5px;background:#eee;border-radius:3px;cursor:pointer;position:relative;margin-bottom:4px}
+.plr-prog-fill{height:100%;background:#23b202;border-radius:3px;width:0%;transition:width .1s linear}
+.plr-times{display:flex;justify-content:space-between;font-size:10px;color:#aaa}
+.plr-vol{width:70px;accent-color:#23b202;cursor:pointer;flex-shrink:0}
+
+/* Tape list */
+.plr-list{display:flex;flex-direction:column;gap:2px}
+.plr-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border-radius:10px;cursor:pointer;
+  transition:background .15s;
+  border:1px solid transparent;
+}
+.plr-item:hover{background:#f5f5f5}
+.plr-item.playing{background:#f0fff0;border-color:#23b202}
+.plr-item-num{font-size:11px;font-weight:700;color:#ccc;min-width:28px;text-align:right;flex-shrink:0}
+.plr-item.playing .plr-item-num{color:#23b202}
+.plr-item-art{
+  width:40px;height:40px;border-radius:6px;overflow:hidden;flex-shrink:0;
+  background:#f0f0f0;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#bbb;
+}
+.plr-item-art img{width:100%;height:100%;object-fit:cover;display:block}
+.plr-item-info{flex:1;min-width:0}
+.plr-item-artist{font-size:13px;font-weight:700;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plr-item-album{font-size:11px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plr-item-tags{display:flex;gap:4px;margin-top:2px;flex-wrap:wrap}
+.plr-tag{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:#f0f0f0;color:#888}
+.plr-item-play{
+  width:32px;height:32px;border-radius:50%;
+  background:#23b202;color:#fff;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;flex-shrink:0;opacity:0;transition:opacity .15s;
+}
+.plr-item:hover .plr-item-play{opacity:1}
+.plr-item.playing .plr-item-play{opacity:1;background:#1a8c01}
+.plr-empty{text-align:center;padding:48px;color:#aaa;font-size:14px}
+
+/* Equalizer animation when playing */
+.plr-eq{display:inline-flex;align-items:flex-end;gap:1px;height:14px}
+.plr-eq span{
+  display:block;width:2px;background:#23b202;border-radius:1px;
+  animation:eqBounce var(--d,.4s) ease-in-out infinite alternate;
+}
+@keyframes eqBounce{from{height:3px}to{height:12px}}
+
+@media(max-width:600px){
+  .plr-now{position:static}
+  .plr-vol{display:none}
+  .plr-now-progress{min-width:100%}
+}
 </style>
 </head>
 <body>
@@ -1033,6 +1117,7 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
     <button class="tab active" onclick="showPage('search',this)">Search</button>
     <button class="tab" onclick="showPage('collection',this)">Collection</button>
     <button class="tab" id="random-tab" onclick="showPage('random',this)">🎲 Random</button>
+    <button class="tab" id="player-tab" onclick="showPage('player',this)">🎵 Player</button>
     <button class="tab" id="dashboard-tab" style="display:none" onclick="showPage('dashboard',this)">Dashboard</button>
     <button class="tab" id="admin-tab" style="display:none" onclick="showPage('admin',this)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1061,6 +1146,7 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
   <button class="mob-tab active" onclick="mobNav('search')">🔍 Search</button>
   <button class="mob-tab" onclick="mobNav('collection')">📼 Collection</button>
   <button class="mob-tab" onclick="mobNav('random')">🎲 Random</button>
+  <button class="mob-tab" onclick="mobNav('player')">🎵 Player</button>
   <button class="mob-tab" id="mob-dashboard-tab" style="display:none" onclick="mobNav('dashboard')">📊 Dashboard</button>
   <button class="mob-tab" id="mob-admin-tab" style="display:none" onclick="mobNav('admin')">✏️ Admin</button>
 </div>
@@ -1249,6 +1335,50 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
   </div>
 </div>
 
+
+<!-- ══ PLAYER PAGE ══ -->
+<div class="page" id="page-player">
+  <div class="plr-wrap">
+    <!-- Header -->
+    <div class="plr-header">
+      <div>
+        <h1 class="plr-title">🎵 PLAYER</h1>
+        <p class="plr-sub" id="plr-sub">Loading tapes…</p>
+      </div>
+      <div class="plr-search-wrap">
+        <input class="plr-search" id="plr-search" type="search" placeholder="Search tapes…" oninput="plrFilter()"/>
+      </div>
+    </div>
+
+    <!-- Now playing bar -->
+    <div class="plr-now" id="plr-now" style="display:none">
+      <div class="plr-now-art" id="plr-now-art">♪</div>
+      <div class="plr-now-info">
+        <div class="plr-now-title" id="plr-now-title">—</div>
+        <div class="plr-now-artist" id="plr-now-artist">—</div>
+      </div>
+      <div class="plr-now-controls">
+        <button class="plr-ctrl" onclick="plrPrev()" title="Previous">⏮</button>
+        <button class="plr-ctrl plr-playpause" id="plr-playpause" onclick="plrToggle()">▶</button>
+        <button class="plr-ctrl" onclick="plrNext()" title="Next">⏭</button>
+      </div>
+      <div class="plr-now-progress">
+        <div class="plr-prog-bar" onclick="plrSeek(event)">
+          <div class="plr-prog-fill" id="plr-prog-fill"></div>
+        </div>
+        <div class="plr-times">
+          <span id="plr-cur">0:00</span>
+          <span id="plr-dur">—</span>
+        </div>
+      </div>
+      <input class="plr-vol" id="plr-vol" type="range" min="0" max="1" step="0.05" value="0.8" oninput="plrSetVol(this.value)" title="Volume"/>
+    </div>
+
+    <!-- Tape list -->
+    <div class="plr-list" id="plr-list"></div>
+  </div>
+</div>
+
 <!-- ══ DASHBOARD ══ -->
 <div class="page" id="page-dashboard">
   <div class="page-wrap">
@@ -1409,6 +1539,214 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
 </div>
 
 <script>
+// ════════════════════════════════════════════════════
+// PLAYER PAGE
+// ════════════════════════════════════════════════════
+let _plrTapes    = [];   // all playable tapes (have music URL)
+let _plrFiltered = [];   // after search filter
+let _plrIdx      = -1;   // currently playing index in _plrFiltered
+let _plrAudio    = null;
+let _plrRAF      = null;
+let _plrPaused   = false;
+
+function initPlayerPage() {
+  // Build tape list: tapes that have a music URL
+  _plrTapes = ALL_TAPES.filter(t => t.music && t.music.trim());
+  _plrFiltered = _plrTapes.slice();
+  renderPlrList();
+  const sub = document.getElementById('plr-sub');
+  if (sub) sub.textContent = _plrTapes.length + ' tapes with audio';
+}
+
+function plrFilter() {
+  const q = (document.getElementById('plr-search')?.value || '').toLowerCase().trim();
+  _plrFiltered = q
+    ? _plrTapes.filter(t =>
+        (t.artist||'').toLowerCase().includes(q) ||
+        (t.album||'').toLowerCase().includes(q) ||
+        String(t.ref||'').includes(q) ||
+        (t.genre||'').toLowerCase().includes(q) ||
+        (t.label||'').toLowerCase().includes(q)
+      )
+    : _plrTapes.slice();
+  renderPlrList();
+}
+
+function renderPlrList() {
+  const el = document.getElementById('plr-list');
+  if (!el) return;
+  if (!_plrFiltered.length) {
+    el.innerHTML = '<div class="plr-empty">No tapes with audio found.<br>Add a Lark CDN URL to the <b>music</b> column in your sheet.</div>';
+    return;
+  }
+  el.innerHTML = _plrFiltered.map((t, i) => {
+    const artUrl = fixArtUrl(t.artwork);
+    const initials = (t.artist||'?').split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const imgHtml = artUrl
+      ? `<img src="${artUrl}" alt="" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
+         <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#bbb">${initials}</div>`
+      : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#bbb">${initials}</div>`;
+    const isPlaying = i === _plrIdx;
+    const numHtml = isPlaying
+      ? `<span class="plr-eq"><span style="--d:.3s"></span><span style="--d:.5s"></span><span style="--d:.4s"></span><span style="--d:.6s"></span></span>`
+      : `<span>${i+1}</span>`;
+    const tags = [t.genre, t.label].filter(Boolean).map(g => `<span class="plr-tag">${esc(g)}</span>`).join('');
+    return `<div class="plr-item${isPlaying?' playing':''}" id="plr-item-${i}" onclick="plrPlay(${i})">
+      <div class="plr-item-num">${numHtml}</div>
+      <div class="plr-item-art">${imgHtml}</div>
+      <div class="plr-item-info">
+        <div class="plr-item-artist">${esc(t.artist||'Unknown')}</div>
+        <div class="plr-item-album">${esc(t.album||'—')}</div>
+        ${tags ? `<div class="plr-item-tags">${tags}</div>` : ''}
+      </div>
+      <button class="plr-item-play" onclick="event.stopPropagation();plrPlay(${i})" title="Play">
+        ${isPlaying && !_plrPaused ? '⏸' : '▶'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function plrPlay(i) {
+  if (i < 0 || i >= _plrFiltered.length) return;
+
+  // If clicking the same tape → toggle pause/play
+  if (i === _plrIdx && _plrAudio) {
+    plrToggle();
+    return;
+  }
+
+  _plrIdx = i;
+  _plrPaused = false;
+  const tape = _plrFiltered[i];
+  const murl = fixAudioUrl(tape.music);
+
+  // Update now-playing bar
+  document.getElementById('plr-now').style.display = 'flex';
+  document.getElementById('plr-now-title').textContent = tape.album || '—';
+  document.getElementById('plr-now-artist').textContent = tape.artist || '—';
+  document.getElementById('plr-prog-fill').style.width = '0%';
+  document.getElementById('plr-cur').textContent = '0:00';
+  document.getElementById('plr-dur').textContent = '—';
+  document.getElementById('plr-playpause').textContent = '⏸';
+
+  // Artwork in now-playing
+  const nowArt = document.getElementById('plr-now-art');
+  const artUrl = fixArtUrl(tape.artwork);
+  nowArt.innerHTML = artUrl
+    ? `<img src="${artUrl}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.textContent='♪'">`
+    : '♪';
+
+  // Stop old audio
+  if (_plrAudio) { _plrAudio.pause(); cancelAnimationFrame(_plrRAF); _plrAudio = null; }
+
+  // Check if Lark or external → open in tab (can't stream due to CORS/auth)
+  if (isLarkUrl(murl)) {
+    // Show info and open link
+    document.getElementById('plr-now-title').textContent = tape.album || '—';
+    document.getElementById('plr-now-artist').textContent = (tape.artist||'') + ' · Opens in Lark';
+    document.getElementById('plr-playpause').textContent = '↗';
+    renderPlrList();
+    window.open(murl, '_blank', 'noopener');
+    return;
+  }
+
+  // Direct audio file → stream in browser
+  const audio = new Audio();
+  audio.crossOrigin = 'anonymous';
+  audio.volume = parseFloat(document.getElementById('plr-vol')?.value || '0.8');
+  _plrAudio = audio;
+
+  audio.addEventListener('loadedmetadata', () => {
+    document.getElementById('plr-dur').textContent = fmtTime(audio.duration);
+  });
+  audio.addEventListener('play', () => {
+    document.getElementById('plr-playpause').textContent = '⏸';
+    _plrPaused = false;
+    plrTick();
+    renderPlrList();
+  });
+  audio.addEventListener('pause', () => {
+    document.getElementById('plr-playpause').textContent = '▶';
+    _plrPaused = true;
+    cancelAnimationFrame(_plrRAF);
+    renderPlrList();
+  });
+  audio.addEventListener('ended', () => {
+    cancelAnimationFrame(_plrRAF);
+    plrNext();
+  });
+  audio.addEventListener('error', () => {
+    document.getElementById('plr-now-title').textContent = '⚠ Could not load · ' + (tape.album||'—');
+    document.getElementById('plr-playpause').textContent = '▶';
+    renderPlrList();
+  });
+
+  audio.src = murl;
+  audio.load();
+  audio.play().catch(() => {
+    // Autoplay blocked
+    document.getElementById('plr-playpause').textContent = '▶';
+  });
+
+  renderPlrList();
+
+  // Scroll item into view
+  setTimeout(() => {
+    const el = document.getElementById('plr-item-' + i);
+    if (el) el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 100);
+}
+
+function plrToggle() {
+  if (!_plrAudio) {
+    if (_plrIdx < 0 && _plrFiltered.length) plrPlay(0);
+    return;
+  }
+  if (_plrAudio.paused) _plrAudio.play().catch(()=>{});
+  else _plrAudio.pause();
+}
+
+function plrNext() {
+  const next = _plrIdx + 1;
+  if (next < _plrFiltered.length) plrPlay(next);
+  else { _plrIdx = -1; _plrPaused = false; if(_plrAudio){_plrAudio.pause();} renderPlrList(); }
+}
+
+function plrPrev() {
+  if (_plrAudio && _plrAudio.currentTime > 3) { _plrAudio.currentTime = 0; return; }
+  const prev = _plrIdx - 1;
+  if (prev >= 0) plrPlay(prev);
+}
+
+function plrSeek(e) {
+  if (!_plrAudio) return;
+  const bar = e.currentTarget;
+  const ratio = e.offsetX / bar.offsetWidth;
+  _plrAudio.currentTime = ratio * _plrAudio.duration;
+}
+
+function plrSetVol(v) {
+  if (_plrAudio) _plrAudio.volume = parseFloat(v);
+}
+
+function plrTick() {
+  if (!_plrAudio) return;
+  const pct = _plrAudio.duration ? (_plrAudio.currentTime / _plrAudio.duration * 100) : 0;
+  const fill = document.getElementById('plr-prog-fill');
+  if (fill) fill.style.width = pct + '%';
+  const cur = document.getElementById('plr-cur');
+  if (cur) cur.textContent = fmtTime(_plrAudio.currentTime);
+  _plrRAF = requestAnimationFrame(plrTick);
+}
+
+// Hook showPage to init player when first opened
+const _origShowPage = showPage;
+function showPage(id, btn) {
+  _origShowPage(id, btn);
+  if (id === 'player') initPlayerPage();
+}
+
+
 // ── PAGE & SCROLL STATE PERSISTENCE ──
 let _scrollSaveTimer = null;
 
