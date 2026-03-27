@@ -303,6 +303,16 @@ mark{background:#fef08a;color:#713f12;border-radius:2px;padding:0 1px}
   display:flex;gap:4px;padding-bottom:0;
   border-bottom:1px solid #eee;margin-bottom:20px;
 }
+.col-tile-am{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 8px;border-radius:20px;font-size:10px;font-weight:700;
+  background:#fff;border:1px solid #e0e0e0;color:#333;
+  text-decoration:none;transition:background .15s, border-color .15s;
+  cursor:pointer;
+}
+.col-tile-am:hover{background:#f5f5f7;border-color:#999;color:#000}
+.col-tile-am svg{flex-shrink:0}
+
 .col-mode-btn{
   height:40px;padding:0 14px;display:flex;align-items:center;gap:6px;
   font-size:13px;font-weight:700;color:#888;cursor:pointer;
@@ -1940,11 +1950,16 @@ function tapeCard(t, q='') {
   const itA = (t.artist||'').replace(/'/g,"\\'");
   const itB = (t.album||'').replace(/'/g,"\\'");
   const musicBtn = '';
-  const ytmQuery = encodeURIComponent(`${t.artist||''} ${t.album||''}`.trim());
+  const searchQ = encodeURIComponent(`${t.artist||''} ${t.album||''}`.trim());
   const ytmBtn = (t.artist||t.album) ? `
-    <a class="col-tile-ytm" href="https://music.youtube.com/search?q=${ytmQuery}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+    <a class="col-tile-ytm" href="https://music.youtube.com/search?q=${searchQ}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M21.582 6.186a2.506 2.506 0 0 0-1.768-1.768C18.254 4 12 4 12 4s-6.254 0-7.814.418a2.506 2.506 0 0 0-1.768 1.768C2 7.746 2 12 2 12s0 4.254.418 5.814a2.506 2.506 0 0 0 1.768 1.768C5.746 20 12 20 12 20s6.254 0 7.814-.418a2.506 2.506 0 0 0 1.768-1.768C22 16.254 22 12 22 12s0-4.254-.418-5.814zM10 15.464V8.536L15.818 12 10 15.464z"/></svg>
       YT Music
+    </a>` : '';
+  const amBtn = (t.artist||t.album) ? `
+    <a class="col-tile-am" href="https://music.apple.com/search?term=${searchQ}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043a5.022 5.022 0 00-1.877-.726 10.496 10.496 0 00-1.564-.15c-.04-.003-.083-.01-.124-.013H5.986c-.152.01-.303.017-.455.026C4.786.07 4.043.15 3.34.428 2.004.958 1.04 1.88.475 3.208a5.495 5.495 0 00-.36 1.548c-.06.532-.079 1.07-.084 1.605 0 .05-.01.1-.013.15v12.878c.01.152.017.305.026.457.042.727.169 1.435.46 2.103.54 1.235 1.432 2.116 2.684 2.621.636.249 1.299.352 1.976.399.249.017.498.024.747.03l.164.006h13.054c.174-.012.348-.02.522-.033.682-.05 1.349-.16 1.99-.41 1.317-.507 2.22-1.415 2.742-2.734.232-.576.35-1.18.392-1.8.033-.467.046-.936.048-1.404V6.124zm-7.397 6.485c-.016-.73.287-1.417.876-1.952a4.1 4.1 0 00-.573-.53c-.47-.36-1.025-.57-1.618-.59-.716-.027-1.395.27-1.957.547-.446.22-.697.222-1.135.003-.56-.276-1.245-.572-1.96-.54-.916.047-1.73.534-2.205 1.31a4.5 4.5 0 00-.608 2.296c-.016 1.404.516 2.836 1.23 3.995.35.565.757 1.055 1.23 1.41.465.35 1.017.55 1.615.548.655-.003 1.195-.239 1.73-.474.398-.177.74-.177 1.138 0 .536.235 1.074.471 1.728.471.598 0 1.15-.2 1.617-.547.485-.363.905-.87 1.262-1.453.194-.31.367-.648.52-1.01a4.087 4.087 0 01-1.89-3.484zM14.29 6.05a3.478 3.478 0 01-2.495 1.077 3.582 3.582 0 011.003-2.582 3.594 3.594 0 012.486-1.077c.035.97-.306 1.893-1 2.582z"/></svg>
+      Apple Music
     </a>` : '';
   return `
     <div class="tape-card">
@@ -1953,7 +1968,7 @@ function tapeCard(t, q='') {
         <div class="tape-artist">${hi(esc(t.artist))}</div>
         <div class="tape-album">${hi(esc(t.album||'—'))}</div>
         <div class="tape-tags">${tags}</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${musicBtn}${ytmBtn}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">${musicBtn}${ytmBtn}${amBtn}</div>
       </div>
     </div>`;
 }
@@ -3361,6 +3376,31 @@ async function deleteTape() {
 function setAdminStatus(type, msg) {
   const el = document.getElementById('admin-status');
   el.className='admin-status '+type; el.textContent=msg;
+}
+
+
+// ── Restore collection sub-state after page load ──
+function restoreCollectionState() {
+  const colMode = sessionStorage.getItem('col_mode');
+  if (colMode === 'label') {
+    switchColMode('label');
+    const btn = document.getElementById('mode-btn-label');
+    if (btn) { btn.classList.add('active'); document.getElementById('mode-btn-artist')?.classList.remove('active'); }
+  }
+  const subMode = sessionStorage.getItem('col_sub_mode');
+  if (subMode === 'artist_detail') {
+    const name = sessionStorage.getItem('col_sub_artist');
+    if (name) {
+      _savedScrollPos = parseInt(sessionStorage.getItem('scroll_collection')||'0');
+      showArtist(name);
+    }
+  } else if (subMode === 'label_detail') {
+    const name = sessionStorage.getItem('col_sub_label');
+    if (name) {
+      _savedScrollPosLabel = parseInt(sessionStorage.getItem('scroll_collection')||'0');
+      showLabel(name);
+    }
+  }
 }
 
 
