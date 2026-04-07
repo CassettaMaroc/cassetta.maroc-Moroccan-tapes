@@ -2555,6 +2555,10 @@ function mupOpen() {
 }
 function mupClose() {
   document.getElementById('music-popup').classList.remove('open');
+  if (_mupAudio) { _mupAudio.pause(); _mupAudio.src = ''; _mupAudio = null; }
+  cancelAnimationFrame(_mupRAF);
+  document.getElementById('mup-play-btn').textContent = '▶';
+  document.getElementById('mup-fill').style.width = '0%';
 }
 
 function mupTrackRow(track, i, activeIdx) {
