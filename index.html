@@ -4635,7 +4635,13 @@ function afAddNew(inputId, listId, arrName) {
   const val = window.prompt('Enter new value:');
   if (!val||!val.trim()) return;
   const clean = val.trim();
-  if (!window[arrName].includes(clean)) window[arrName].push(clean);
+  // NOTE: _artistOptions/_labelOptions/_genreOptions are declared with `let`,
+  // so they are NOT properties of `window` — window[arrName] was always
+  // undefined here, which silently crashed this whole function before it
+  // could update the list or the input. Look them up via a local map instead.
+  const optionArrays = { _artistOptions, _labelOptions, _genreOptions };
+  const arr = optionArrays[arrName];
+  if (arr && !arr.includes(clean)) arr.push(clean);
   const dl = document.getElementById(listId);
   if (dl) { const o=document.createElement('option'); o.value=clean; dl.appendChild(o); }
   const inp = document.getElementById(inputId);
@@ -4669,7 +4675,6 @@ async function saveTape() {
     'INSTAGRAM':        igUrl ? 'posted' : r('af_instagram_s'),
     'WEBARCHIVE':       waUrl ? 'posted' : r('af_webarchive_s'),
     'ART Work':         g('af_artwork'),
-    'Label Logo':       g('af_label_logo'),
     'YOUTUBE':          ytUrl||r('af_youtube_s'),
     'INSTAGRAM':        igUrl||r('af_instagram_s'),
     'WEBARCHIVE':       waUrl||r('af_webarchive_s'),
