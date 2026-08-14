@@ -4633,38 +4633,19 @@ function openAdminForm(ref) {
 
 function afAddNew(inputId, listId, arrName) {
   const val = window.prompt('Enter new value:');
-  if (!val || !val.trim()) return;
-
+  if (!val||!val.trim()) return;
   const clean = val.trim();
-
-  // Keep the new value in the current admin session.
-  // These arrays are module/global lexical variables, not window properties.
-  const optionArrays = {
-    _artistOptions,
-    _labelOptions,
-    _genreOptions
-  };
-
+  // NOTE: _artistOptions/_labelOptions/_genreOptions are declared with `let`,
+  // so they are NOT properties of `window` — window[arrName] was always
+  // undefined here, which silently crashed this whole function before it
+  // could update the list or the input. Look them up via a local map instead.
+  const optionArrays = { _artistOptions, _labelOptions, _genreOptions };
   const arr = optionArrays[arrName];
-  if (arr && !arr.includes(clean)) {
-    arr.push(clean);
-    arr.sort((a,b) => a.localeCompare(b));
-  }
-
+  if (arr && !arr.includes(clean)) arr.push(clean);
   const dl = document.getElementById(listId);
-  if (dl && ![...dl.options].some(o => o.value === clean)) {
-    const o = document.createElement('option');
-    o.value = clean;
-    dl.appendChild(o);
-  }
-
+  if (dl) { const o=document.createElement('option'); o.value=clean; dl.appendChild(o); }
   const inp = document.getElementById(inputId);
-  if (inp) {
-    inp.value = clean;
-    inp.focus();
-  }
-
-  setAdminStatus('ok', '✓ Added to the list. Click “Save Tape” to write it to Google Sheets.');
+  if (inp) inp.value = clean;
 }
 
 function closeAdminForm() {
@@ -4690,10 +4671,10 @@ async function saveTape() {
     'Label / Notes':    g('af_label'),
     'COVER SCAN':       r('af_coverscan'),
     'Digitized':        r('af_digitized'),
+    'YOUTUBE':          ytUrl ? 'posted' : r('af_youtube_s'),
+    'INSTAGRAM':        igUrl ? 'posted' : r('af_instagram_s'),
+    'WEBARCHIVE':       waUrl ? 'posted' : r('af_webarchive_s'),
     'ART Work':         g('af_artwork'),
-    'YOUTUBE':          ytUrl || r('af_youtube_s'),
-    'INSTAGRAM':        igUrl || r('af_instagram_s'),
-    'WEBARCHIVE':       waUrl || r('af_webarchive_s'),
     'music':            g('af_music'),
   };
 
@@ -4734,12 +4715,7 @@ async function saveTape() {
     document.querySelectorAll('#admin-number-bar .num-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.range === _adminRange);
     });
-  } catch(e) {
-    console.error('SheetDB save error:', e);
-    setAdminStatus('err',
-      '❌ Save failed: ' + (e.message || e) +
-      ' — check that the SheetDB URL is correct and allows POST/PATCH.');
-  }
+  } catch(e) { setAdminStatus('err','❌ '+e.message); }
 }
 
 // ── Delete ────────────────────────────────────────────────────────
