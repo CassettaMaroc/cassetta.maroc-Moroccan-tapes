@@ -4349,25 +4349,6 @@ let _artistOptions = [];
 let _labelOptions  = [];
 let _genreOptions  = [];
 
-// Resolve a candidate field name to whichever one is the REAL column header
-// in the connected sheet (e.g. if the sheet's header is actually "Style" or
-// "Artiste" rather than "Genre / Category" or "Artist"). Without this, saving
-// writes to a column name that doesn't exist in the sheet, and SheetDB just
-// drops that field silently — the request looks successful but the value
-// never lands anywhere.
-function realKey(...candidates) {
-  const sample = _adminTapes[0];
-  if (!sample) return candidates[0];
-  const keys = Object.keys(sample);
-  for (const c of candidates) { if (keys.includes(c)) return c; }
-  const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g,'');
-  for (const c of candidates) {
-    const found = keys.find(k => norm(k) === norm(c));
-    if (found) return found;
-  }
-  return candidates[0];
-}
-
 // ── Init ──────────────────────────────────────────────────────────
 function initAdminPage() {
   // Restore saved URL
@@ -4578,7 +4559,7 @@ function openAdminForm(ref) {
       <div class="af-field af-full">
         <label>Artist</label>
         <div class="af-combo">
-          <input id="af_artist" list="dl_artist" value="${esc(fget(t,'Artist','Artiste','ARTIST','artiste'))}" placeholder="Type or select…"/>
+          <input id="af_artist" list="dl_artist" value="${esc(fget(t,'Artist'))}" placeholder="Type or select…"/>
           <datalist id="dl_artist">${_artistOptions.map(a=>`<option value="${esc(a)}">`).join('')}</datalist>
           <button class="af-add" onclick="afAddNew('af_artist','dl_artist','_artistOptions')">+ New</button>
         </div>
@@ -4592,7 +4573,7 @@ function openAdminForm(ref) {
       <div class="af-field af-full">
         <label>Genre / Category <span style="font-weight:400;color:var(--mut)">(comma-separated)</span></label>
         <div class="af-combo">
-          <input id="af_genre" list="dl_genre" value="${esc(fget(t,'Genre / Category','Genre','Category','GENRE','Style'))}" placeholder="e.g. Pop, Rock, Amazigh Fusion"/>
+          <input id="af_genre" list="dl_genre" value="${esc(fget(t,'Genre / Category','Genre','Category'))}" placeholder="e.g. Pop, Rock, Amazigh Fusion"/>
           <datalist id="dl_genre">${_genreOptions.map(g=>`<option value="${esc(g)}">`).join('')}</datalist>
           <button class="af-add" onclick="afAddNew('af_genre','dl_genre','_genreOptions')">+ New</button>
         </div>
@@ -4601,7 +4582,7 @@ function openAdminForm(ref) {
       <div class="af-field af-full">
         <label>Label / Notes</label>
         <div class="af-combo">
-          <input id="af_label" list="dl_label" value="${esc(fget(t,'Label / Notes','Label','Notes','LABEL','Maison'))}" placeholder="Label name…"/>
+          <input id="af_label" list="dl_label" value="${esc(fget(t,'Label / Notes','Label','Notes'))}" placeholder="Label name…"/>
           <datalist id="dl_label">${_labelOptions.map(l=>`<option value="${esc(l)}">`).join('')}</datalist>
           <button class="af-add" onclick="afAddNew('af_label','dl_label','_labelOptions')">+ New</button>
         </div>
@@ -4652,19 +4633,38 @@ function openAdminForm(ref) {
 
 function afAddNew(inputId, listId, arrName) {
   const val = window.prompt('Enter new value:');
-  if (!val||!val.trim()) return;
+  if (!val || !val.trim()) return;
+
   const clean = val.trim();
-  // NOTE: _artistOptions/_labelOptions/_genreOptions are declared with `let`,
-  // so they are NOT properties of `window` — window[arrName] was always
-  // undefined here, which silently crashed this whole function before it
-  // could update the list or the input. Look them up via a local map instead.
-  const optionArrays = { _artistOptions, _labelOptions, _genreOptions };
+
+  // Keep the new value in the current admin session.
+  // These arrays are module/global lexical variables, not window properties.
+  const optionArrays = {
+    _artistOptions,
+    _labelOptions,
+    _genreOptions
+  };
+
   const arr = optionArrays[arrName];
-  if (arr && !arr.includes(clean)) arr.push(clean);
+  if (arr && !arr.includes(clean)) {
+    arr.push(clean);
+    arr.sort((a,b) => a.localeCompare(b));
+  }
+
   const dl = document.getElementById(listId);
-  if (dl) { const o=document.createElement('option'); o.value=clean; dl.appendChild(o); }
+  if (dl && ![...dl.options].some(o => o.value === clean)) {
+    const o = document.createElement('option');
+    o.value = clean;
+    dl.appendChild(o);
+  }
+
   const inp = document.getElementById(inputId);
-  if (inp) inp.value = clean;
+  if (inp) {
+    inp.value = clean;
+    inp.focus();
+  }
+
+  setAdminStatus('ok', '✓ Added to the list. Click “Save Tape” to write it to Google Sheets.');
 }
 
 function closeAdminForm() {
@@ -4683,18 +4683,19 @@ async function saveTape() {
   const igUrl  = g('af_instagram_url');
   const waUrl  = g('af_webarchive_url');
 
-  const data = {};
-  data[realKey('Artist','Artiste','ARTIST','artiste')]                      = g('af_artist');
-  data[realKey('Album / Title','Album','Title','ALBUM','Titre')]            = g('af_album');
-  data[realKey('Genre / Category','Genre','Category','GENRE','Style')]      = g('af_genre');
-  data[realKey('Label / Notes','Label','Notes','LABEL','Maison')]           = g('af_label');
-  data[realKey('COVER SCAN','CoverScan','Cover Scan','Cover','Couverture')] = r('af_coverscan');
-  data[realKey('Digitized','Digitisé','Numérisé')]                          = r('af_digitized');
-  data[realKey('YOUTUBE','Youtube','YouTube')]                              = ytUrl||r('af_youtube_s');
-  data[realKey('INSTAGRAM','Instagram')]                                    = igUrl||r('af_instagram_s');
-  data[realKey('WEBARCHIVE','WebArchive','Web Archive','Archive')]          = waUrl||r('af_webarchive_s');
-  data[realKey('ART Work','ArtWork','artwork')]                             = g('af_artwork');
-  data[realKey('music','Music','MUSIC','audio','Audio')]                    = g('af_music');
+  const data = {
+    'Artist':           g('af_artist'),
+    'Album / Title':    g('af_album'),
+    'Genre / Category': g('af_genre'),
+    'Label / Notes':    g('af_label'),
+    'COVER SCAN':       r('af_coverscan'),
+    'Digitized':        r('af_digitized'),
+    'ART Work':         g('af_artwork'),
+    'YOUTUBE':          ytUrl || r('af_youtube_s'),
+    'INSTAGRAM':        igUrl || r('af_instagram_s'),
+    'WEBARCHIVE':       waUrl || r('af_webarchive_s'),
+    'music':            g('af_music'),
+  };
 
   const isNew = !_editingRef;
   setAdminStatus('loading', isNew?'↻ Adding tape…':'↻ Saving…');
@@ -4702,8 +4703,8 @@ async function saveTape() {
     let res;
     if (isNew) {
       const maxRef = _adminTapes.reduce((m,t)=>Math.max(m,parseInt(t['REF'])||0),0);
-      data[realKey('REF','Ref','ref','#')] = String(maxRef+1);
-      data[realKey('dates','date','Date','Dates','DATE','date added','Date Added')] = new Date().toLocaleDateString('en-US');
+      data['REF']   = String(maxRef+1);
+      data['dates'] = new Date().toLocaleDateString('en-US');
       res = await fetch(_sheetdbUrl, {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({data:[data]})
@@ -4733,7 +4734,12 @@ async function saveTape() {
     document.querySelectorAll('#admin-number-bar .num-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.range === _adminRange);
     });
-  } catch(e) { setAdminStatus('err','❌ '+e.message); }
+  } catch(e) {
+    console.error('SheetDB save error:', e);
+    setAdminStatus('err',
+      '❌ Save failed: ' + (e.message || e) +
+      ' — check that the SheetDB URL is correct and allows POST/PATCH.');
+  }
 }
 
 // ── Delete ────────────────────────────────────────────────────────
